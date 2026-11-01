@@ -1,0 +1,142 @@
+.prc-catalog-page {
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding: 40px 20px;
+
+    background-color: #fff9fb;
+    color: #333333;
+
+    font-family: inherit;
+}
+
+.prc-catalog-page * {
+    box-sizing: border-box;
+}
+
+.prc-catalog-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.prc-catalog-header {
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.prc-catalog-label {
+    display: inline-block;
+    margin-bottom: 10px;
+
+    color: #7c2d4d;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.prc-catalog-header h1 {
+    margin: 0;
+
+    color: #7c2d4d;
+
+    font-size: 32px;
+    line-height: 1.3;
+}
+
+.prc-catalog-header p {
+    max-width: 600px;
+    margin: 12px auto 0;
+
+    color: #666666;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.prc-catalog-filters {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+
+    margin-bottom: 24px;
+    padding: 24px;
+
+    background-color: #ffffff;
+
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.prc-catalog-results {
+    margin-bottom: 20px;
+
+    color: #666666;
+    font-size: 14px;
+}
+
+.prc-catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.prc-catalog-status {
+    padding: 50px 20px;
+    text-align: center;
+
+    color: #7c2d4d;
+    font-size: 17px;
+}
+
+.prc-catalog-empty {
+    padding: 60px 20px;
+
+    background-color: #ffffff;
+
+    border: 1px dashed #d9a8b8;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+.prc-catalog-empty h2 {
+    margin: 0 0 12px;
+
+    color: #7c2d4d;
+    font-size: 22px;
+}
+
+.prc-catalog-empty p {
+    margin: 0;
+
+    color: #666666;
+    font-size: 14px;
+}
+
+@media (max-width: 960px) {
+    .prc-catalog-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .prc-catalog-page {
+        padding: 24px 12px;
+    }
+
+    .prc-catalog-header h1 {
+        font-size: 25px;
+    }
+
+    .prc-catalog-filters {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .prc-catalog-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
