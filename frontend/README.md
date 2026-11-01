@@ -1,75 +1,91 @@
-# React + TypeScript + Vite
+Puro Relleno Cupcake – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web para la gestión de pedidos personalizados de la pastelería Puro Relleno Cupcake.
 
-Currently, two official plugins are available:
+Este frontend forma parte del proyecto desarrollado por el Grupo 3 del curso Fullstack Developer de SENATI.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Tecnologías utilizadas
 
-## React Compiler
+El frontend utiliza React, TypeScript y Vite.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+ESLint se utiliza para revisar la calidad y consistencia del código.
 
-## Expanding the ESLint configuration
+Requisitos
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Tener instalado Node.js y npm.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Instalación
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Desde la carpeta principal del repositorio, ingresar al directorio del frontend:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+cd frontend
 
-```
+Instalar las dependencias:
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+npm install
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Ejecutar el proyecto
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Para iniciar el servidor de desarrollo:
 
-```
+npm run dev
+
+Abrir en el navegador la dirección local que indique Vite.
+
+Comandos disponibles
+
+"npm run dev": inicia el servidor de desarrollo.
+
+"npm run build": verifica TypeScript y genera la compilación de producción.
+
+"npm run lint": ejecuta ESLint para revisar el código.
+
+"npm run preview": permite visualizar localmente la compilación generada.
+
+Estructura inicial
+
+La carpeta "src" contiene la estructura principal de la aplicación.
+
+"assets/": recursos estáticos utilizados por los componentes.
+
+"components/": componentes reutilizables de React.
+
+"pages/": páginas correspondientes a los módulos del sistema.
+
+"services/": servicios para la comunicación con las API REST del backend.
+
+"types/": interfaces y tipos compartidos de TypeScript.
+
+"App.tsx": componente principal de React.
+
+"App.css": estilos del componente principal.
+
+"index.css": estilos generales de la aplicación.
+
+"main.tsx": punto de entrada de React.
+
+Organización del desarrollo
+
+El proyecto utiliza GitFlow para organizar el trabajo colaborativo.
+
+La rama "main" contiene las versiones estables del proyecto.
+
+La rama "develop" se utiliza para integrar los cambios del equipo.
+
+Cada actividad de Jira se desarrolla en una rama independiente con el formato:
+
+"feature/G3PRC-n"
+
+Los cambios se integran a "develop" mediante Pull Requests revisados por otro integrante.
+
+Estado del frontend
+
+La estructura inicial del frontend se encuentra en preparación.
+
+Las funcionalidades de navegación, autenticación, catálogo, pedidos, agenda y pagos se desarrollarán progresivamente mediante las actividades correspondientes de Jira.
+
+Equipo
+
+Grupo 3 – Puro Relleno Cupcake.
+
+SENATI – Fullstack Developer.
