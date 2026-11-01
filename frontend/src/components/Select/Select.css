@@ -1,0 +1,73 @@
+.prc-select-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.prc-select-label {
+    color: #333333;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.prc-select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 12px;
+
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+
+    background-color: #ffffff;
+    color: #333333;
+
+    font-family: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+            border-color 0.2s ease,
+            box-shadow 0.2s ease;
+}
+
+/* Campo seleccionado */
+.prc-select:focus {
+    outline: none;
+    border-color: #7c2d4d;
+    box-shadow: 0 0 0 3px rgba(124, 45, 77, 0.15);
+}
+
+/* Campo con error */
+.prc-select--error {
+    border-color: #dc3545;
+}
+
+.prc-select--error:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+/* Campo deshabilitado */
+.prc-select:disabled {
+    background-color: #f5f5f5;
+    color: #777777;
+    cursor: not-allowed;
+}
+
+/* Mensaje de error */
+.prc-select-error {
+    margin: 0;
+    color: #dc3545;
+    font-size: 12px;
+}
+
+/* Texto de ayuda */
+.prc-select-helper {
+    margin: 0;
+    color: #666666;
+    font-size: 12px;
+}
