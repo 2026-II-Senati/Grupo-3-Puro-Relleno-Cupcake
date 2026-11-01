@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="720"
+     height="480"
+     viewBox="0 0 720 480">
+
+    <rect
+            width="720"
+            height="480"
+            fill="#fff4f7"
+    />
+
+    <circle
+            cx="360"
+            cy="210"
+            r="170"
+            fill="#fce4ec"
+    />
+
+    <ellipse
+            cx="360"
+            cy="400"
+            rx="135"
+            ry="18"
+            fill="#e8cbd5"
+    />
+
+    <path
+            d="M260 245 L460 245 L430 385
+       Q360 410 290 385 Z"
+            fill="#b86b83"
+    />
+
+    <path
+            d="M290 260 L310 385
+       M330 260 L340 395
+       M390 260 L380 395
+       M430 260 L410 385"
+            stroke="#f8c6d5"
+            stroke-width="10"
+            fill="none"
+    />
+
+    <path
+            d="M255 250
+       C225 215 250 175 290 180
+       C270 140 305 105 345 125
+       C360 75 425 90 430 140
+       C480 135 505 195 465 225
+       C480 255 450 275 420 260
+       Z"
+            fill="#f3b5c8"
+    />
+
+    <circle
+            cx="365"
+            cy="118"
+            r="15"
+            fill="#b6254d"
+    />
+
+    <path
+            d="M365 105 Q375 85 395 88"
+            stroke="#547a42"
+            stroke-width="6"
+            fill="none"
+            stroke-linecap="round"
+    />
+
+</svg>
