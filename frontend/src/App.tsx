@@ -1,19 +1,83 @@
-import './App.css'
+import {
+    BrowserRouter,
+    Navigate,
+    Route,
+    Routes,
+    useLocation,
+} from 'react-router-dom';
 
-function App() {
-  return (
-      <main>
-        <h1>Puro Relleno Cupcake</h1>
+import { Navbar } from './components/Navbar';
 
-        <p>
-          Sistema web para la gestión de pedidos personalizados.
-        </p>
+import { Login } from './pages/Login';
+import { Dashboard } from './pages/Dashboard';
+import { Pedidos } from './pages/Pedidos';
+import { Agenda } from './pages/Agenda';
+import { Pagos } from './pages/Pagos';
+import { NotFound } from './pages/NotFound';
 
-        <p>
-          Proyecto desarrollado con React y TypeScript.
-        </p>
-      </main>
-  )
+import ProductCatalogPage from './features/catalog/ProductCatalogPage';
+import { sampleProducts } from './features/catalog/data/products';
+
+function AppLayout() {
+    const location = useLocation();
+
+    const hideNavbar = location.pathname === '/login';
+
+    return (
+        <>
+            {!hideNavbar && <Navbar />}
+
+            <Routes>
+                <Route
+                    path="/"
+                    element={<Navigate to="/login" replace />}
+                />
+
+                <Route
+                    path="/login"
+                    element={<Login />}
+                />
+
+                <Route
+                    path="/dashboard"
+                    element={<Dashboard />}
+                />
+
+                <Route
+                    path="/catalogo"
+                    element={
+                        <ProductCatalogPage products={sampleProducts} />
+                    }
+                />
+
+                <Route
+                    path="/pedidos"
+                    element={<Pedidos />}
+                />
+
+                <Route
+                    path="/agenda"
+                    element={<Agenda />}
+                />
+
+                <Route
+                    path="/pagos"
+                    element={<Pagos />}
+                />
+
+                <Route
+                    path="*"
+                    element={<NotFound />}
+                />
+            </Routes>
+        </>
+    );
 }
 
-export default App
+export default function App() {
+    return (
+        <BrowserRouter>
+            <AppLayout />
+        </BrowserRouter>
+    );
+}
