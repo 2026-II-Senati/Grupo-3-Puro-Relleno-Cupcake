@@ -1,0 +1,12 @@
+# Configuraciones personales de WebStorm
+.idea/
+
+# Variables de entorno privadas
+.env
+.env.*
+!.env.example
+
+# Dependencias y compilación de Node.js
+node_modules/
+dist/
+*.log

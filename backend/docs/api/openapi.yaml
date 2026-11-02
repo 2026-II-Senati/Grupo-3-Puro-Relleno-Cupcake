@@ -1,0 +1,452 @@
+openapi: 3.0.3
+info:
+  title: API Puro Relleno Cupcake
+  version: 1.0.0
+  description: Contrato inicial para la comunicación entre frontend y backend.
+
+servers:
+  - url: http://localhost:3000/api/v1
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Autenticación
+  - name: Clientes
+  - name: Productos
+  - name: Pedidos
+  - name: Pagos
+  - name: Entregas
+
+paths:
+  /auth/login:
+    post:
+      tags: [Autenticación]
+      summary: Iniciar sesión
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Inicio de sesión exitoso
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+  /clients:
+    get:
+      tags: [Clientes]
+      summary: Consultar clientes
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de clientes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+    post:
+      tags: [Clientes]
+      summary: Registrar cliente
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientInput"
+      responses:
+        "201":
+          description: Cliente creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /clients/{id}:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    get:
+      tags: [Clientes]
+      summary: Consultar cliente por identificador
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Cliente encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [Clientes]
+      summary: Actualizar cliente
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClientInput"
+      responses:
+        "200":
+          description: Cliente actualizado
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /products:
+    get:
+      tags: [Productos]
+      summary: Consultar productos disponibles
+      responses:
+        "200":
+          description: Lista de productos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      tags: [Productos]
+      summary: Registrar producto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "201":
+          description: Producto creado
+        "400":
+          $ref: "#/components/responses/BadRequest"
+
+  /products/{id}:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    get:
+      tags: [Productos]
+      summary: Consultar producto
+      responses:
+        "200":
+          description: Producto encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      tags: [Productos]
+      summary: Actualizar producto
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductInput"
+      responses:
+        "200":
+          description: Producto actualizado
+
+  /orders:
+    get:
+      tags: [Pedidos]
+      summary: Consultar pedidos
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lista de pedidos
+    post:
+      tags: [Pedidos]
+      summary: Registrar pedido
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Pedido creado
+
+  /orders/{id}:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    get:
+      tags: [Pedidos]
+      summary: Consultar pedido
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Pedido encontrado
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+  /orders/{id}/status:
+    parameters:
+      - $ref: "#/components/parameters/Id"
+    patch:
+      tags: [Pedidos]
+      summary: Actualizar estado del pedido
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [pending, in_production, ready, delivered]
+      responses:
+        "200":
+          description: Estado actualizado
+
+  /orders/{orderId}/payments:
+    parameters:
+      - $ref: "#/components/parameters/OrderId"
+    get:
+      tags: [Pagos]
+      summary: Consultar pagos de un pedido
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Historial de pagos
+    post:
+      tags: [Pagos]
+      summary: Registrar pago
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentInput"
+      responses:
+        "201":
+          description: Pago registrado
+
+  /orders/{orderId}/delivery:
+    parameters:
+      - $ref: "#/components/parameters/OrderId"
+    get:
+      tags: [Entregas]
+      summary: Consultar entrega o recogida
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Información de entrega
+    patch:
+      tags: [Entregas]
+      summary: Actualizar entrega
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Entrega actualizada
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    OrderId:
+      name: orderId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+
+  schemas:
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        user:
+          type: object
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    ClientInput:
+      type: object
+      required: [firstName, lastName, phone]
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+          format: email
+          nullable: true
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        category:
+          type: string
+        basePrice:
+          type: number
+          format: double
+          minimum: 0
+        imageUrl:
+          type: string
+          nullable: true
+        isAvailable:
+          type: boolean
+
+    ProductInput:
+      type: object
+      required: [name, category, basePrice]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        basePrice:
+          type: number
+          format: double
+          minimum: 0
+        imageUrl:
+          type: string
+        isAvailable:
+          type: boolean
+          default: true
+
+    OrderInput:
+      type: object
+      required: [clientId, deliveryDate]
+      properties:
+        clientId:
+          type: integer
+        deliveryDate:
+          type: string
+          format: date-time
+        deliveryMethod:
+          type: string
+          enum: [pickup, delivery]
+        notes:
+          type: string
+
+    PaymentInput:
+      type: object
+      required: [amount, method]
+      properties:
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+        method:
+          type: string
+          enum: [cash, bank_transfer, yape, plin]
+        reference:
+          type: string
+
+    Error:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: string
+
+  responses:
+    BadRequest:
+      description: Solicitud inválida
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Autenticación requerida
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
