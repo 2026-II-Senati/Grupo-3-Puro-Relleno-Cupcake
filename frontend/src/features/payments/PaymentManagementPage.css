@@ -1,0 +1,278 @@
+.prc-payments-page {
+    min-height: 100vh;
+    padding: 40px 20px;
+    background: #fff9fb;
+    color: #333333;
+}
+
+.prc-payments-container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.prc-payments-header {
+    margin-bottom: 28px;
+}
+
+.prc-payments-label {
+    color: #7c2d4d;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.prc-payments-header h1 {
+    margin: 8px 0;
+    color: #7c2d4d;
+    font-size: 30px;
+}
+
+.prc-payments-header p {
+    margin: 0;
+    color: #666666;
+    line-height: 1.6;
+}
+
+.prc-payments-notice {
+    margin-top: 16px;
+}
+
+.prc-payments-search {
+    margin: 24px 0;
+    padding: 20px;
+    border: 1px solid #eeeeee;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.prc-payments-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.4fr);
+    align-items: start;
+    gap: 24px;
+}
+
+.prc-payments-list,
+.prc-payments-detail {
+    min-width: 0;
+}
+
+.prc-payments-list h2 {
+    margin: 0 0 16px;
+    color: #7c2d4d;
+    font-size: 20px;
+}
+
+.prc-payments-order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.prc-payment-order {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    padding: 18px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #333333;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.prc-payment-order:hover {
+    border-color: #c5819b;
+}
+
+.prc-payment-order--selected {
+    border: 2px solid #7c2d4d;
+    background: #fff1f5;
+}
+
+.prc-payment-order:focus-visible {
+    outline: 3px solid #e9a8c2;
+    outline-offset: 3px;
+}
+
+.prc-payment-order-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.prc-payment-order-top > strong {
+    color: #7c2d4d;
+    font-size: 16px;
+}
+
+.prc-payment-customer {
+    font-size: 14px;
+}
+
+.prc-payment-order-amounts {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: #666666;
+    font-size: 13px;
+}
+
+.prc-payment-order-amounts strong {
+    color: #333333;
+}
+
+.prc-payments-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.prc-payment-status {
+    margin-bottom: 20px;
+}
+
+.prc-payment-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+}
+
+.prc-payment-summary > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.prc-payment-summary dt {
+    color: #666666;
+    font-size: 14px;
+}
+
+.prc-payment-summary dd {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.prc-payment-balance {
+    padding-top: 16px;
+    border-top: 1px solid #eeeeee;
+}
+
+.prc-payment-balance dd {
+    color: #7c2d4d;
+    font-size: 23px;
+}
+
+.prc-payment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.prc-payment-form-note {
+    margin: 0;
+    color: #666666;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.prc-payment-table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.prc-payment-table {
+    width: 100%;
+    min-width: 450px;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.prc-payment-table th,
+.prc-payment-table td {
+    padding: 12px 10px;
+    border-bottom: 1px solid #eeeeee;
+    text-align: left;
+    vertical-align: top;
+}
+
+.prc-payment-table th {
+    color: #7c2d4d;
+    font-weight: 700;
+}
+
+.prc-payment-table td {
+    overflow-wrap: anywhere;
+}
+
+.prc-payment-no-history {
+    margin: 0;
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.prc-payments-empty {
+    padding: 50px 20px;
+    border: 1px dashed #d9a8b8;
+    border-radius: 12px;
+    background: #ffffff;
+    text-align: center;
+}
+
+.prc-payments-empty h2 {
+    margin: 0 0 12px;
+    color: #7c2d4d;
+}
+
+.prc-payments-empty p {
+    color: #666666;
+}
+
+.prc-payments-feedback {
+    margin-top: 24px;
+    padding: 30px 20px;
+    text-align: center;
+}
+
+@media (max-width: 900px) {
+    .prc-payments-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .prc-payments-page {
+        padding: 24px 12px;
+    }
+
+    .prc-payments-header h1 {
+        font-size: 24px;
+    }
+
+    .prc-payments-search {
+        padding: 16px;
+    }
+
+    .prc-payment-order {
+        padding: 15px;
+    }
+
+    .prc-payment-summary dd {
+        font-size: 14px;
+    }
+
+    .prc-payment-balance dd {
+        font-size: 20px;
+    }
+}
