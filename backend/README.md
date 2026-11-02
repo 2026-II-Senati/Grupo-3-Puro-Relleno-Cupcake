@@ -110,3 +110,21 @@ La tabla `clients` utiliza el modelo `Client` de Sequelize.
 | `email` | VARCHAR | Opcional, formato de correo válido |
 | `created_at` | TIMESTAMP | Fecha de creación |
 | `updated_at` | TIMESTAMP | Fecha de actualización |
+
+## Modelo de productos
+
+La tabla `products` utiliza el modelo `Product` de Sequelize.
+
+| Campo | Tipo | Restricciones |
+|---|---|---|
+| `id` | INTEGER | Clave primaria, autoincremental |
+| `name` | VARCHAR | Obligatorio |
+| `description` | TEXT | Opcional |
+| `category` | VARCHAR | Obligatorio |
+| `base_price` | DECIMAL(10,2) | Obligatorio, no negativo |
+| `image_url` | VARCHAR | Opcional |
+| `is_available` | BOOLEAN | Valor predeterminado `true` |
+| `created_at` | TIMESTAMP | Fecha de creación |
+| `updated_at` | TIMESTAMP | Fecha de actualización |
+
+El modelo queda preparado para ser utilizado posteriormente desde controladores, rutas y funcionalidades de catálogo.
