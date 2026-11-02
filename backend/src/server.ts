@@ -1,11 +1,15 @@
 import app from "./app";
-import { connectDatabase } from "./config/database";
-
+import { sequelize, connectDatabase } from "./config/database";
+import "./models/Client";
+      
 const port = Number(process.env.PORT) || 3000;
 
 const startServer = async (): Promise<void> => {
   try {
     await connectDatabase();
+    await sequelize.sync();
+
+    console.log("Modelos sincronizados correctamente.");
 
     app.listen(port, () => {
       console.log(`Servidor ejecutándose en http://localhost:${port}`);

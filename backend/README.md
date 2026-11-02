@@ -96,3 +96,17 @@ src/
 ├── app.ts
 └── server.ts
 ```
+
+## Modelo de clientes
+
+La tabla `clients` utiliza el modelo `Client` de Sequelize.
+
+| Campo | Tipo | Restricciones |
+|---|---|---|
+| `id` | INTEGER | Clave primaria, autoincremental |
+| `first_name` | VARCHAR | Obligatorio |
+| `last_name` | VARCHAR | Obligatorio |
+| `phone` | VARCHAR | Obligatorio |
+| `email` | VARCHAR | Opcional, formato de correo válido |
+| `created_at` | TIMESTAMP | Fecha de creación |
+| `updated_at` | TIMESTAMP | Fecha de actualización |
