@@ -11,11 +11,13 @@ export function validateOrderForm(
     // Datos del cliente
 
     if (!values.customerFirstName.trim()) {
-        errors.customerFirstName = 'Ingresa los nombres del cliente.';
+        errors.customerFirstName =
+            'Ingresa los nombres del cliente.';
     }
 
     if (!values.customerLastName.trim()) {
-        errors.customerLastName = 'Ingresa los apellidos del cliente.';
+        errors.customerLastName =
+            'Ingresa los apellidos del cliente.';
     }
 
     const phoneDigits = values.phone.replace(/\D/g, '');
@@ -26,16 +28,18 @@ export function validateOrderForm(
         phoneDigits.length < 7 ||
         phoneDigits.length > 15
     ) {
-        errors.phone = 'Ingresa un número de teléfono válido.';
+        errors.phone =
+            'Ingresa un número de teléfono válido.';
     }
 
-    // El correo es opcional
+    // Correo electrónico opcional
 
     if (
         values.email.trim() &&
         !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())
     ) {
-        errors.email = 'Ingresa un correo electrónico válido.';
+        errors.email =
+            'Ingresa un correo electrónico válido.';
     }
 
     // Producto y cantidad
@@ -51,7 +55,8 @@ export function validateOrderForm(
         !Number.isSafeInteger(quantity) ||
         quantity <= 0
     ) {
-        errors.quantity = 'La cantidad debe ser un número entero mayor que cero.';
+        errors.quantity =
+            'La cantidad debe ser un número entero mayor que cero.';
     }
 
     // Personalización
@@ -65,25 +70,43 @@ export function validateOrderForm(
     }
 
     if (!values.decoration.trim()) {
-        errors.decoration = 'Describe la decoración solicitada.';
+        errors.decoration =
+            'Describe la decoración solicitada.';
     }
 
-    // Información de entrega
+    // Modalidad de entrega
 
     if (
         values.deliveryMode === 'delivery' &&
         !values.deliveryAddress.trim()
     ) {
         errors.deliveryAddress =
-            'Ingresa la dirección para la entrega a domicilio.';
+            'Ingresa la dirección de entrega.';
     }
+
+    // Fecha de entrega
+
+    const now = new Date();
+
+    const today = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, '0'),
+        String(now.getDate()).padStart(2, '0'),
+    ].join('-');
 
     if (!values.deliveryDate) {
-        errors.deliveryDate = 'Selecciona una fecha de entrega.';
+        errors.deliveryDate =
+            'Selecciona una fecha de entrega.';
+    } else if (values.deliveryDate < today) {
+        errors.deliveryDate =
+            'La fecha de entrega no puede ser anterior a hoy.';
     }
 
+    // Hora de entrega
+
     if (!values.deliveryTime) {
-        errors.deliveryTime = 'Selecciona un horario de entrega.';
+        errors.deliveryTime =
+            'Selecciona un horario de entrega.';
     }
 
     return errors;
