@@ -1,6 +1,7 @@
 import app from "./app";
 import { sequelize, connectDatabase } from "./config/database";
 import "./models/Client";
+import "./models/Product";
       
 const port = Number(process.env.PORT) || 3000;
 
