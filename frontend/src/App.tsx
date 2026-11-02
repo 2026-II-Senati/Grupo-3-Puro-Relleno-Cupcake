@@ -18,6 +18,8 @@ import { NotFound } from './pages/NotFound';
 import ProductCatalogPage from './features/catalog/ProductCatalogPage';
 import { sampleProducts } from './features/catalog/data/products';
 
+import CreateOrderPage from './features/orders/CreateOrderPage';
+
 function AppLayout() {
     const location = useLocation();
 
@@ -48,6 +50,11 @@ function AppLayout() {
                     element={
                         <ProductCatalogPage products={sampleProducts} />
                     }
+                />
+
+                <Route
+                    path="/pedidos/nuevo"
+                    element={<CreateOrderPage />}
                 />
 
                 <Route
