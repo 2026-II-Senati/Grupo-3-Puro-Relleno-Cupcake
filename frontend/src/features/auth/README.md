@@ -1,36 +1,36 @@
-Interfaz de inicio de sesión - Puro Relleno Cupcake
+Interfaz de inicio de sesión — Puro Relleno Cupcake
 
 Descripción
 
-Esta carpeta contiene la interfaz de inicio de sesión del sistema Puro Relleno Cupcake.
+Este módulo contiene la interfaz de inicio de sesión del sistema Puro Relleno Cupcake.
 
-La implementación corresponde a la tarea G3PRC-13 y está desarrollada con React, TypeScript y CSS.
+Fue desarrollado con React, TypeScript y CSS como parte de G3PRC-13.
 
-La pantalla utiliza los componentes reutilizables creados en G3PRC-11.
+La interfaz se encuentra integrada en la navegación principal mediante React Router.
 
-Funcionalidades implementadas
+Funcionalidades
 
-El formulario permite ingresar un correo electrónico y una contraseña.
+El formulario permite ingresar correo electrónico y contraseña.
 
-Incluye validaciones para detectar campos vacíos y comprobar el formato básico del correo electrónico.
+Incluye validaciones de campos obligatorios y comprobación básica del formato del correo electrónico.
 
-También permite mostrar y ocultar la contraseña, visualizar mensajes de error y representar un estado de carga.
+Permite mostrar y ocultar la contraseña, visualizar mensajes de error y representar un estado de carga.
 
-La interfaz cuenta con un diseño adaptable a diferentes tamaños de pantalla.
+La pantalla cuenta con un diseño adaptable a dispositivos móviles.
 
 Componentes reutilizados
 
-Se utilizan los componentes Button, Input, Card y Alert, disponibles en "frontend/src/components".
+Se utilizan los componentes Button, Input, Card y Alert, desarrollados en G3PRC-11.
 
-Archivos principales
+Estructura
 
-"LoginPage.tsx": contiene la interfaz y el comportamiento del formulario.
+"LoginPage.tsx": implementación visual y comportamiento del formulario.
 
-"LoginPage.css": contiene los estilos de la pantalla.
+"LoginPage.css": estilos de la interfaz.
 
-"login-demo-main.tsx": permite visualizar el formulario independientemente de React Router.
+"src/pages/Login.tsx": componente que conecta la interfaz con React Router.
 
-"login-demo.html": página HTML de demostración, ubicada en la carpeta principal del frontend.
+"src/App.tsx": configuración de la ruta de inicio de sesión.
 
 Ejecución
 
@@ -40,47 +40,31 @@ npm run dev
 
 Abrir en el navegador:
 
-http://localhost:5173/login-demo.html
+http://localhost:5173/login
 
-Si Vite utiliza otro puerto, reemplazarlo por el indicado en la terminal.
+Si Vite utiliza otro puerto, utilizar el indicado en la terminal.
 
-Validaciones
+Estado de la autenticación
 
-El formulario comprueba que el correo electrónico y la contraseña no estén vacíos.
+Actualmente se implementa únicamente la interfaz de usuario.
 
-También realiza una validación básica del formato del correo electrónico.
+El formulario realiza validaciones locales y simula brevemente un estado de carga.
 
-Los mensajes de error se muestran mediante los componentes visuales correspondientes.
+Todavía no realiza autenticación real ni envía credenciales a una API.
 
-Estado actual
-
-Esta implementación corresponde únicamente a la interfaz de usuario.
-
-El formulario simula brevemente un estado de carga después de superar las validaciones.
-
-Todavía no realiza autenticación real, no envía credenciales al servidor y no genera sesiones de usuario.
-
-La integración con el backend y la gestión de autenticación se realizarán en las tareas correspondientes.
-
-Integración con React Router
-
-El componente LoginPage puede importarse posteriormente en la configuración de React Router para utilizarse en la ruta "/login".
-
-La integración con las rutas corresponde a G3PRC-9.
-
-No se modificaron los archivos principales de navegación.
+La autenticación mediante JWT y la protección de rutas se implementarán en la tarea correspondiente.
 
 Verificaciones
-
-Se utilizan los siguientes comandos:
 
 npm run build
 npm run lint
 
-También se realizaron pruebas manuales del formulario, las validaciones y su visualización en diferentes tamaños de pantalla.
+También deben comprobarse manualmente las validaciones, la visualización de contraseña y la adaptación a distintos tamaños de pantalla.
 
-Información de Jira
+Información del proyecto
 
-Tarea: G3PRC-13
+Tarea de interfaz: G3PRC-13.
 
-Rama: "feature/G3PRC-13"
+Tarea de navegación: G3PRC-9.
+
+Rama de integración: develop.
