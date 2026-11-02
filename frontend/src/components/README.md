@@ -193,9 +193,6 @@ Desde la carpeta `frontend`, ejecutar:
 npm run dev
 ```
 
-Después abrir:
-
-http://localhost:5173/componentes-demo.html
 
 Si Vite utiliza otro puerto, se debe utilizar el indicado en la terminal.
 

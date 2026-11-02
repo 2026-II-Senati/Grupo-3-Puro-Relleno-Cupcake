@@ -4,102 +4,91 @@ Descripción
 
 Este módulo contiene la interfaz del catálogo de productos del sistema Puro Relleno Cupcake.
 
-Fue desarrollado con React, TypeScript y CSS como parte de la tarea G3PRC-15.
+Fue desarrollado utilizando React, TypeScript y CSS como parte de G3PRC-15.
 
-Permite visualizar productos, realizar búsquedas por nombre y filtrar por categoría.
+Actualmente se encuentra integrado con React Router mediante la ruta "/catalogo".
 
-Funcionalidades implementadas
+Funcionalidades
 
-La interfaz presenta los productos mediante tarjetas reutilizables que incluyen imagen, nombre, descripción, categoría, precio base y disponibilidad.
+El catálogo permite visualizar productos mediante tarjetas que incluyen imagen, nombre, descripción, categoría, precio base y disponibilidad.
 
-La búsqueda permite encontrar productos por nombre sin distinguir entre mayúsculas, minúsculas y tildes.
+Se implementó una búsqueda por nombre que no distingue entre mayúsculas, minúsculas y tildes.
 
-El filtro por categoría permite mostrar únicamente los productos pertenecientes a la categoría seleccionada.
+También se incorporó un filtro por categoría.
 
-También se implementaron estados visuales de carga, error y ausencia de resultados.
+La interfaz contempla estados de carga, error y ausencia de resultados.
 
-La interfaz cuenta con un diseño adaptable a computadoras, tabletas y dispositivos móviles.
+Cuenta con un diseño adaptable a computadoras, tabletas y dispositivos móviles.
 
-Estructura del módulo
+Estructura
 
-"ProductCatalogPage.tsx": contiene la pantalla principal del catálogo, la búsqueda y los filtros.
+"ProductCatalogPage.tsx": pantalla principal del catálogo y lógica de filtrado.
 
-"ProductCatalogPage.css": contiene los estilos de la interfaz.
+"ProductCatalogPage.css": estilos de la interfaz.
 
-"components/ProductCard.tsx": componente reutilizable para mostrar información de cada producto.
+"components/ProductCard.tsx": representación individual de los productos.
 
 "components/ProductCard.css": estilos de las tarjetas.
 
-"types/Product.ts": define las propiedades de un producto mediante TypeScript.
+"types/Product.ts": definición del modelo de producto.
 
-"data/products.ts": contiene productos ficticios para demostración.
+"data/products.ts": datos ficticios utilizados temporalmente.
 
-"examples/CatalogDemo.tsx": permite probar el catálogo y simular sus diferentes estados.
-
-"examples/main.tsx": inicia React para la página de demostración.
-
-El archivo "catalogo-demo.html" se encuentra directamente dentro de "frontend".
-
-Datos de demostración
-
-Actualmente se utilizan seis productos ficticios.
-
-Los nombres, categorías, precios y disponibilidades son ilustrativos y no representan necesariamente la información real de la pastelería.
-
-La imagen utilizada es un recurso gráfico de demostración.
-
-La información podrá reemplazarse posteriormente mediante la integración con la API REST correspondiente.
+La ruta "/catalogo" se configura en "src/App.tsx".
 
 Componentes reutilizados
 
-El catálogo utiliza componentes desarrollados previamente en G3PRC-11.
+Se utilizan Card, Badge, Input, Select y Alert, desarrollados anteriormente en G3PRC-11.
 
-Se reutilizan "Card", "Badge", "Input", "Select" y "Alert".
+Datos actuales
 
-Esto permite mantener una apariencia consistente y evitar la duplicación de código.
+El catálogo utiliza seis productos ficticios.
+
+Los precios, nombres, categorías y disponibilidades son ilustrativos.
+
+Las imágenes también son recursos de demostración.
+
+Estos datos serán sustituidos posteriormente mediante la integración con la API REST del backend.
 
 Ejecución
 
 Desde la carpeta "frontend", ejecutar:
 
-"npm run dev"
+npm run dev
 
-Después abrir en el navegador:
+Abrir en el navegador:
 
-"http://localhost:5173/catalogo-demo.html"
+http://localhost:5173/catalogo
 
-Si Vite utiliza otro puerto, debe utilizarse el indicado en la terminal.
+Si Vite utiliza otro puerto, utilizar el indicado en la terminal.
 
-La página de demostración está preparada para el entorno de desarrollo y no está incluida actualmente como entrada independiente en la compilación de producción.
+Integración con React Router
 
-Pruebas
+El componente "ProductCatalogPage" está integrado mediante la ruta "/catalogo".
 
-Se verificó la búsqueda de productos por nombre y el filtro por categoría.
+Se accede a él desde la barra de navegación principal.
 
-También se comprobaron los mensajes de ausencia de resultados y los estados simulados de carga y error.
-
-Se revisó la visualización de los productos en diferentes tamaños de pantalla.
-
-Los comandos utilizados para verificar el código son:
-
-"npm run build"
-
-"npm run lint"
+La integración conserva las rutas existentes de Dashboard, Pedidos, Agenda y Pagos.
 
 Integración futura
 
-El componente "ProductCatalogPage" recibe los productos mediante propiedades tipadas con TypeScript.
+Actualmente se utilizan datos locales.
 
-Esto permite integrarlo posteriormente con los servicios del backend.
+La conexión con los servicios reales del backend se realizará en la tarea de integración correspondiente.
 
-La conexión real con la API REST corresponde a otra tarea del proyecto.
+El componente acepta una colección de productos tipada mediante TypeScript.
 
-Este módulo no configura rutas ni modifica React Router. La integración con la navegación principal podrá realizarse cuando se complete G3PRC-9.
+Verificaciones
 
-Información del desarrollo
+npm run build
+npm run lint
 
-Tarea Jira: G3PRC-15
+También deben comprobarse manualmente la búsqueda, el filtrado, los mensajes de estado y la visualización en dispositivos móviles.
 
-Rama: "feature/G3PRC-15"
+Información del proyecto
 
-Estado: Implementación de interfaz completada, pendiente de integración a develop.
+Tarea del catálogo: G3PRC-15.
+
+Tarea de navegación: G3PRC-9.
+
+Rama de integración: develop.
