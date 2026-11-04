@@ -13,9 +13,15 @@ import {
   initializeOrderAssociations,
 } from "./models/associations";
 
+import {
+  initializeUserAssociations,
+} from "./models/userAssociations";
+
 // Registrar relaciones antes de sincronizar.
 
 initializeOrderAssociations();
+
+initializeUserAssociations();
 
 const port = Number(process.env.PORT) || 3000;
 
