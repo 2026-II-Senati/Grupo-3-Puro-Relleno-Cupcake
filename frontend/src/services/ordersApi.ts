@@ -2,6 +2,8 @@ import type {
     OrderFormValues,
 } from '../features/orders/types/OrderForm';
 
+import { authorizedFetch } from './authorizedFetch';
+
 interface ApiClient {
     id: number;
     firstName: string;
@@ -20,7 +22,7 @@ async function apiRequest<T>(
     url: string,
     options?: RequestInit
 ): Promise<T> {
-    const response = await fetch(url, options);
+    const response = await authorizedFetch(url, options);
 
     const result: unknown = await response.json().catch(() => null);
 

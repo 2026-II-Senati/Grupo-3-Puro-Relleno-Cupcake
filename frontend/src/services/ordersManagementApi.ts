@@ -3,6 +3,8 @@ import type {
     OrderStatus,
 } from '../features/orders/management/types/OrderRecord';
 
+import { authorizedFetch } from './authorizedFetch';
+
 interface ApiClient {
     id: number;
     firstName: string;
@@ -182,7 +184,7 @@ async function getErrorMessage(
 export async function getOrders(
     signal?: AbortSignal
 ): Promise<OrderRecord[]> {
-    const response = await fetch('/api/v1/orders', {
+    const response = await authorizedFetch('/api/v1/orders', {
         method: 'GET',
         signal,
     });
@@ -206,7 +208,7 @@ export async function updateOrderStatus(
     orderId: string,
     status: OrderStatus
 ): Promise<void> {
-    const response = await fetch(
+    const response = await authorizedFetch(
         `/api/v1/orders/${encodeURIComponent(orderId)}/status`,
         {
             method: 'PATCH',

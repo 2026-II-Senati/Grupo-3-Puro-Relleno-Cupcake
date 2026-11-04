@@ -1,7 +1,4 @@
-import {
-    Router,
-    type RequestHandler,
-} from "express";
+import { Router } from "express";
 
 import {
     listOrders,
@@ -10,54 +7,40 @@ import {
     updateOrderStatus,
 } from "../controllers/orders.controller";
 
+import {
+    requireAuth,
+} from "../middleware/auth.middleware";
+
+import {
+    requirePermission,
+} from "../middleware/authorization.middleware";
+
 const router = Router();
 
-/*
- * Habilitación temporal para pruebas locales.
- *
- * G3PRC-14 establece autenticación JWT.
- * Cuando G3PRC-18 esté implementada, esta
- * protección provisional deberá sustituirse
- * por el middleware real de autenticación.
- */
+router.use(requireAuth);
 
-const allowLocalOrderTesting: RequestHandler = (
-    req,
-    res,
-    next
-) => {
-    const address = req.socket.remoteAddress ?? "";
+router.get(
+    "/",
+    requirePermission("orders:read"),
+    listOrders
+);
 
-    const isLocal =
-        address === "127.0.0.1" ||
-        address === "::1" ||
-        address === "::ffff:127.0.0.1";
+router.post(
+    "/",
+    requirePermission("orders:write"),
+    createOrder
+);
 
-    const isDevelopment =
-        process.env.NODE_ENV === "development";
+router.get(
+    "/:id",
+    requirePermission("orders:read"),
+    getOrderById
+);
 
-    const isEnabled =
-        process.env.ORDERS_LOCAL_TEST_MODE === "true";
-
-    if (!isLocal || !isDevelopment || !isEnabled) {
-        res.status(503).json({
-            message:
-                "La API de pedidos requiere autenticación JWT. Solo están habilitadas las pruebas locales.",
-        });
-        return;
-    }
-
-    next();
-};
-
-router.use(allowLocalOrderTesting);
-
-router.get("/", listOrders);
-
-router.post("/", createOrder);
-
-router.get("/:id", getOrderById);
-
-router.patch("/:id/status", updateOrderStatus);
+router.patch(
+    "/:id/status",
+    requirePermission("orders:write"),
+    updateOrderStatus
+);
 
 export default router;

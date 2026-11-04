@@ -99,6 +99,28 @@ export function AuthProvider({
         };
     }, []);
 
+    useEffect(() => {
+        function handleSessionExpired() {
+            clearSession();
+
+            setSession(null);
+
+            setChecking(false);
+        }
+
+        window.addEventListener(
+            'prc-session-expired',
+            handleSessionExpired
+        );
+
+        return () => {
+            window.removeEventListener(
+                'prc-session-expired',
+                handleSessionExpired
+            );
+        };
+    }, []);
+
     async function signIn(
         email: string,
         password: string
