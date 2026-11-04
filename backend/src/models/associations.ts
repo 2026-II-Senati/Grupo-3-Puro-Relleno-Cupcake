@@ -6,6 +6,8 @@ import { Order } from "./Order";
 
 import { OrderDetail } from "./OrderDetail";
 
+import { Payment } from "./Payment";
+
 export function initializeOrderAssociations(): void {
 
     // Un cliente puede tener varios pedidos.
@@ -53,6 +55,18 @@ export function initializeOrderAssociations(): void {
     OrderDetail.belongsTo(Product, {
         foreignKey: "productId",
         as: "product",
+        onDelete: "RESTRICT",
+    });
+
+    Order.hasMany(Payment, {
+        foreignKey: "orderId",
+        as: "payments",
+        onDelete: "RESTRICT",
+    });
+
+    Payment.belongsTo(Order, {
+        foreignKey: "orderId",
+        as: "order",
         onDelete: "RESTRICT",
     });
 }
