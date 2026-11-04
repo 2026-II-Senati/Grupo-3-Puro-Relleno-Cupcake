@@ -15,8 +15,7 @@ import { Agenda } from './pages/Agenda';
 import { Pagos } from './pages/Pagos';
 import { NotFound } from './pages/NotFound';
 
-import ProductCatalogPage from './features/catalog/ProductCatalogPage';
-import { sampleProducts } from './features/catalog/data/products';
+import CatalogConnectedPage from './features/catalog/CatalogConnectedPage';
 
 import CreateOrderPage from './features/orders/CreateOrderPage';
 
@@ -47,9 +46,7 @@ function AppLayout() {
 
                 <Route
                     path="/catalogo"
-                    element={
-                        <ProductCatalogPage products={sampleProducts} />
-                    }
+                    element={<CatalogConnectedPage />}
                 />
 
                 <Route
