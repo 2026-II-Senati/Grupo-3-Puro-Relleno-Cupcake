@@ -15,7 +15,26 @@ import {
     requirePermission,
 } from "../middleware/authorization.middleware";
 
+import {
+    getProductImage,
+    parseProductImage,
+    uploadProductImage,
+} from "../controllers/productImages.controller";
+
 const router = Router();
+
+router.get(
+    "/:id/image",
+    getProductImage
+);
+
+router.post(
+    "/:id/image",
+    requireAuth,
+    requirePermission("products:write"),
+    parseProductImage,
+    uploadProductImage
+);
 
 // Consultas públicas del catálogo.
 

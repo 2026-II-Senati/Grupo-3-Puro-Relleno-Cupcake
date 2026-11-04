@@ -39,7 +39,7 @@ router.get(
 
 router.patch(
     "/:id/status",
-    requirePermission("orders:write"),
+    requirePermission("orders:status"),
     updateOrderStatus
 );
 

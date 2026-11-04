@@ -31,6 +31,20 @@ export const requireJsonBody: RequestHandler = (
         return;
     }
 
+    const isProductImageUpload =
+        req.method === "POST" &&
+        /^\/api\/v1\/products\/[1-9]\d*\/image\/?$/.test(
+            req.originalUrl.split("?")[0]
+        );
+
+    if (
+        isProductImageUpload &&
+        req.is("multipart/form-data")
+    ) {
+        next();
+        return;
+    }
+
     // Las API actuales utilizan cuerpos JSON.
     if (!req.is("application/json")) {
         next(
