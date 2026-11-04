@@ -596,6 +596,7 @@ export default function ProductAdminPage() {
 
                     <div
                         style={{
+                            display: 'none',
                             background: '#fff1f5',
                             border: '2px dashed #ec4899',
                             borderRadius: 12,
