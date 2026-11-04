@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Link } from 'react-router-dom';
 
@@ -78,10 +78,6 @@ function OrderManagementPage({
     const [orders, setOrders] = useState<OrderRecord[]>(
         initialOrders
     );
-
-    useEffect(() => {
-        setOrders(initialOrders);
-    }, [initialOrders]);
 
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<

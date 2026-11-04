@@ -19,10 +19,21 @@ import CatalogConnectedPage from './features/catalog/CatalogConnectedPage';
 
 import CreateOrderPage from './features/orders/CreateOrderPage';
 
+import {
+    AuthProvider,
+    RequireAuth,
+    useAuth,
+} from './features/auth/AuthProvider';
+
 function AppLayout() {
     const location = useLocation();
 
-    const hideNavbar = location.pathname === '/login';
+    const { session, checking } = useAuth();
+
+    const hideNavbar =
+        location.pathname === '/login' ||
+        !session ||
+        checking;
 
     return (
         <>
@@ -31,43 +42,59 @@ function AppLayout() {
             <Routes>
                 <Route
                     path="/"
-                    element={<Navigate to="/login" replace />}
+                    element={
+                        <Navigate
+                            to="/dashboard"
+                            replace
+                        />
+                    }
                 />
 
                 <Route
                     path="/login"
-                    element={<Login />}
+                    element={
+                        session
+                            ? (
+                                <Navigate
+                                    to="/dashboard"
+                                    replace
+                                />
+                            )
+                            : <Login />
+                    }
                 />
 
-                <Route
-                    path="/dashboard"
-                    element={<Dashboard />}
-                />
+                <Route element={<RequireAuth />}>
+                    <Route
+                        path="/dashboard"
+                        element={<Dashboard />}
+                    />
 
-                <Route
-                    path="/catalogo"
-                    element={<CatalogConnectedPage />}
-                />
+                    <Route
+                        path="/catalogo"
+                        element={<CatalogConnectedPage />}
+                    />
 
-                <Route
-                    path="/pedidos/nuevo"
-                    element={<CreateOrderPage />}
-                />
+                    <Route
+                        path="/pedidos/nuevo"
+                        element={<CreateOrderPage />}
+                    />
 
-                <Route
-                    path="/pedidos"
-                    element={<Pedidos />}
-                />
+                    <Route
+                        path="/pedidos"
+                        element={<Pedidos />}
+                    />
 
-                <Route
-                    path="/agenda"
-                    element={<Agenda />}
-                />
+                    <Route
+                        path="/agenda"
+                        element={<Agenda />}
+                    />
 
-                <Route
-                    path="/pagos"
-                    element={<Pagos />}
-                />
+                    <Route
+                        path="/pagos"
+                        element={<Pagos />}
+                    />
+                </Route>
 
                 <Route
                     path="*"
@@ -81,7 +108,9 @@ function AppLayout() {
 export default function App() {
     return (
         <BrowserRouter>
-            <AppLayout />
+            <AuthProvider>
+                <AppLayout />
+            </AuthProvider>
         </BrowserRouter>
     );
 }
