@@ -24,6 +24,9 @@ interface OrderManagementPageProps {
 
     status?: ManagementStatus;
 
+    canUpdateStatus: boolean;
+    canCreateOrders: boolean;
+
     onStatusChange: (
         orderId: string,
         newStatus: OrderStatus
@@ -74,6 +77,8 @@ function OrderManagementPage({
                                  initialOrders,
                                  status = 'ready',
                                  onStatusChange,
+                                 canUpdateStatus,
+                                 canCreateOrders,
                              }: OrderManagementPageProps) {
     const [orders, setOrders] = useState<OrderRecord[]>(
         initialOrders
@@ -135,7 +140,7 @@ function OrderManagementPage({
         orderId: string,
         newStatus: OrderStatus
     ): Promise<void> {
-        if (savingStatus) {
+        if (!canUpdateStatus || savingStatus) {
             return;
         }
 
@@ -198,12 +203,14 @@ function OrderManagementPage({
                         </p>
                     </div>
 
-                    <Link
-                        to="/pedidos/nuevo"
-                        className="prc-orders-new-link"
-                    >
-                        + Registrar nuevo pedido
-                    </Link>
+                    {canCreateOrders && (
+                        <Link
+                            to="/pedidos/nuevo"
+                            className="prc-orders-new-link"
+                        >
+                            + Registrar nuevo pedido
+                        </Link>
+                    )}
                 </header>
 
                 <Alert
@@ -532,17 +539,21 @@ function OrderManagementPage({
                                                 <Select
                                                     label="Estado del pedido"
                                                     value={selectedOrder.status}
-                                                    disabled={savingStatus}
+                                                    disabled={savingStatus || !canUpdateStatus}
+
                                                     onChange={(event) => {
                                                         void changeOrderStatus(
                                                             selectedOrder.id,
                                                             event.target.value as OrderStatus
                                                         );
                                                     }}
+
                                                     helperText={
-                                                        savingStatus
-                                                            ? 'Guardando cambios...'
-                                                            : 'El cambio se guardará en PostgreSQL.'
+                                                        !canUpdateStatus
+                                                            ? 'Tu perfil permite consultar el estado, pero no modificarlo.'
+                                                            : savingStatus
+                                                                ? 'Guardando cambios...'
+                                                                : 'El cambio se guardará en PostgreSQL.'
                                                     }
                                                 >
                                                     {availableStatuses.map(

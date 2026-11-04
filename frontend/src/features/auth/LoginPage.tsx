@@ -117,14 +117,16 @@ function LoginPage() {
             <div className="prc-login-container">
 
                 <header className="prc-login-header">
-                    <div
-                        className="prc-login-logo"
-                        aria-hidden="true"
-                    >
-                        🧁
-                    </div>
-
-                    <h1>Puro Relleno Cupcake</h1>
+                    <img
+                        src="/logo-header.png"
+                        alt="Logo de Puro Relleno Cupcake"
+                        style={{
+                            width: '260px',
+                            maxWidth: '100%',
+                            height: 'auto',
+                            objectFit: 'contain',
+                        }}
+                    />
 
                     <p>
                         Sistema de gestión de pedidos personalizados

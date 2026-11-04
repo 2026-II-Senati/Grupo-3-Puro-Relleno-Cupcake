@@ -68,7 +68,7 @@ describe("Autorización por roles", () => {
 
     it("impide al empleado modificar productos", async () => {
         const app = createTestApp(
-            "employee",
+            "customer_service",
             "products:write"
         );
 
@@ -80,7 +80,7 @@ describe("Autorización por roles", () => {
 
     it("permite al empleado consultar pedidos", async () => {
         const app = createTestApp(
-            "employee",
+            "customer_service",
             "orders:read"
         );
 
@@ -92,7 +92,7 @@ describe("Autorización por roles", () => {
 
     it("permite al empleado registrar pagos", async () => {
         const app = createTestApp(
-            "employee",
+            "customer_service",
             "payments:write"
         );
 
@@ -118,6 +118,66 @@ describe("Autorización por roles", () => {
         const app = createTestApp(
             "unknown",
             "orders:read"
+        );
+
+        const response = await request(app)
+            .get("/protected");
+
+        expect(response.status).toBe(403);
+    });
+
+    it("permite a Producción consultar pedidos", async () => {
+        const app = createTestApp(
+            "production",
+            "orders:read"
+        );
+
+        const response = await request(app)
+            .get("/protected");
+
+        expect(response.status).toBe(200);
+    });
+
+    it("permite a Producción actualizar estados", async () => {
+        const app = createTestApp(
+            "production",
+            "orders:status"
+        );
+
+        const response = await request(app)
+            .get("/protected");
+
+        expect(response.status).toBe(200);
+    });
+
+    it("impide a Producción registrar pedidos", async () => {
+        const app = createTestApp(
+            "production",
+            "orders:write"
+        );
+
+        const response = await request(app)
+            .get("/protected");
+
+        expect(response.status).toBe(403);
+    });
+
+    it("impide a Producción registrar pagos", async () => {
+        const app = createTestApp(
+            "production",
+            "payments:write"
+        );
+
+        const response = await request(app)
+            .get("/protected");
+
+        expect(response.status).toBe(403);
+    });
+
+    it("impide a Atención al cliente modificar productos", async () => {
+        const app = createTestApp(
+            "customer_service",
+            "products:write"
         );
 
         const response = await request(app)

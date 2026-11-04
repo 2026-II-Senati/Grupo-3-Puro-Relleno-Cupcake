@@ -25,6 +25,32 @@ import {
     useAuth,
 } from './features/auth/AuthProvider';
 
+import ProductAdminPage from './pages/ProductAdminPage';
+
+import type { ReactNode } from 'react';
+
+function OnlyRoles({
+                       allowed,
+                       children,
+                   }: {
+    allowed: readonly string[];
+    children: ReactNode;
+}) {
+    const { session } = useAuth();
+
+    if (!session) {
+        return <Navigate to="/login" replace />;
+    }
+
+    const role = session.user.role.trim().toLowerCase();
+
+    if (!allowed.includes(role)) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
+    return <>{children}</>;
+}
+
 function AppLayout() {
     const location = useLocation();
 
@@ -77,7 +103,13 @@ function AppLayout() {
 
                     <Route
                         path="/pedidos/nuevo"
-                        element={<CreateOrderPage />}
+                        element={
+                            <OnlyRoles
+                                allowed={['admin', 'customer_service']}
+                            >
+                                <CreateOrderPage />
+                            </OnlyRoles>
+                        }
                     />
 
                     <Route
@@ -92,7 +124,22 @@ function AppLayout() {
 
                     <Route
                         path="/pagos"
-                        element={<Pagos />}
+                        element={
+                            <OnlyRoles
+                                allowed={['admin', 'customer_service']}
+                            >
+                                <Pagos />
+                            </OnlyRoles>
+                        }
+                    />
+
+                    <Route
+                        path="/productos/admin"
+                        element={
+                            <OnlyRoles allowed={['admin']}>
+                                <ProductAdminPage />
+                            </OnlyRoles>
+                        }
                     />
                 </Route>
 

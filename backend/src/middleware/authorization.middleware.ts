@@ -12,6 +12,7 @@ export type Permission =
     | "products:write"
     | "orders:read"
     | "orders:write"
+    | "orders:status"
     | "payments:read"
     | "payments:write";
 
@@ -25,11 +26,12 @@ const permissionsByRole: Record<
         "products:write",
         "orders:read",
         "orders:write",
+        "orders:status",
         "payments:read",
         "payments:write",
     ],
 
-    employee: [
+    customer_service: [
         "clients:read",
         "clients:write",
         "orders:read",
@@ -37,13 +39,18 @@ const permissionsByRole: Record<
         "payments:read",
         "payments:write",
     ],
+
+    production: [
+        "orders:read",
+        "orders:status",
+    ],
 };
 
 export function requirePermission(
     permission: Permission
 ): RequestHandler {
-    return (_req, _res, next) => {
-        const user = _res.locals.authUser as
+    return (_req, res, next) => {
+        const user = res.locals.authUser as
             AuthenticatedUser | undefined;
 
         if (!user) {

@@ -17,6 +17,8 @@ import {
   initializeUserAssociations,
 } from "./models/userAssociations";
 
+import "./models/ProductImage";
+
 // Registrar relaciones antes de sincronizar.
 
 initializeOrderAssociations();

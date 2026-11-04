@@ -6,7 +6,6 @@ import Badge from '../../components/Badge/Badge';
 import Button from '../../components/Button/Button';
 import Card from '../../components/Card/Card';
 import Input from '../../components/Input/Input';
-import Select from '../../components/Select/Select';
 
 import StatCard from './components/StatCard';
 
@@ -40,7 +39,6 @@ interface DashboardPageProps {
     orders: OrderRecord[];
     paymentOrders: PaymentOrder[];
     viewer: DashboardViewer;
-    demoViewers?: DashboardViewer[];
     status?: DashboardLoadStatus;
 }
 
@@ -155,27 +153,15 @@ export default function DashboardPage({
                                           orders,
                                           paymentOrders,
                                           viewer,
-                                          demoViewers,
                                           status = 'ready',
                                       }: DashboardPageProps) {
-    const [previewRole, setPreviewRole] = useState<DashboardRole>(
-        viewer.role
-    );
-
     const [selectedDate, setSelectedDate] = useState(
         getLocalToday
     );
 
     const today = getLocalToday();
 
-    const demoMode = Boolean(demoViewers?.length);
-
-    // En producción, el usuario y sus permisos deberán
-    // provenir del sistema de autenticación.
-    const activeViewer =
-        demoViewers?.find(
-            (item) => item.role === previewRole
-        ) ?? viewer;
+    const activeViewer = viewer;
 
     const isProduction =
         activeViewer.role === 'production';
@@ -516,41 +502,7 @@ export default function DashboardPage({
           </span>
                 </header>
 
-                {demoMode && (
-                    <Alert
-                        variant="info"
-                        title="Dashboard de demostración"
-                    >
-                        Los pedidos, pagos, estadísticas y perfiles
-                        mostrados son ficticios. El selector de roles
-                        permite probar la presentación, pero no
-                        modifica permisos reales ni sustituye
-                        la autorización del backend.
-                    </Alert>
-                )}
-
                 <div className="prc-dashboard-controls">
-                    {demoMode && (
-                        <Select
-                            label="Vista de rol (simulación)"
-                            value={previewRole}
-                            onChange={(event) =>
-                                setPreviewRole(
-                                    event.target.value as DashboardRole
-                                )
-                            }
-                            helperText="Solo cambia la presentación de prueba."
-                        >
-                            {demoViewers?.map((item) => (
-                                <option
-                                    key={item.role}
-                                    value={item.role}
-                                >
-                                    {dashboardRoleLabels[item.role]}
-                                </option>
-                            ))}
-                        </Select>
-                    )}
 
                     <Input
                         label="Fecha para entregas y recogidas"

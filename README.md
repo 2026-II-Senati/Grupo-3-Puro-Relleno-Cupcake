@@ -1,142 +1,87 @@
-🧁 Puro Relleno Cupcake
+# 🧁 Puro Relleno Cupcake
 
-Sistema de gestión de pedidos personalizados
+**Sistema web de gestión de pedidos personalizados**  
+Proyecto académico de **SENATI – Fullstack Developer Software, 2026-II**  
+**Equipo:** Grupo 3 · --show**Repositorio:** `2026-II-Senati/Grupo-3-Puro-Relleno-Cupcake`
 
-Aplicación web fullstack para administrar los pedidos personalizados de la pastelería Puro Relleno Cupcake.
+## 1. ¿Qué hace el sistema?
 
-El sistema permite gestionar clientes, consultar productos, registrar pedidos personalizados, organizar las fechas de entrega, actualizar los estados de producción y llevar el control de pagos y adelantos.
+Puro Relleno Cupcake permite gestionar productos de repostería, fotografías, clientes, pedidos personalizados, estados de producción, agenda de entregas o recogidas, pagos y adelantos. Incluye autenticación por correo y contraseña con JWT y permisos según el rol del usuario.
 
-Proyecto académico: SENATI – Fullstack Developer Software, 2026-II.
+El frontend utiliza **React, TypeScript, Vite y React Router**. El backend utiliza **Node.js, Express, TypeScript, Sequelize y PostgreSQL**. Las pruebas del backend se ejecutan con **Vitest y Supertest**.
 
-Equipo: Grupo 3.
+Las imágenes decorativas de la web (logo, favicon y banners) se encuentran en `frontend/public/`. Las fotografías que se suben desde el administrador de productos se almacenan en **PostgreSQL**, en `product_images`, y se recuperan mediante la API.
 
-Tecnologías utilizadas
+> **Importante:** este repositorio comparte código y, cuando se haya generado, un catálogo de demostración. **No es una base de datos compartida en tiempo real**: cada integrante utiliza su propio PostgreSQL local. Los cambios que alguien haga en su base no se replican automáticamente en las demás computadoras.
 
-El frontend está desarrollado con React, TypeScript, Vite y React Router.
+## 2. Requisitos
 
-El backend utiliza Node.js, Express, TypeScript y Sequelize.
+Instalar **Git**, **Node.js** (recomendado: versión 22.12 o superior), **npm**, **PostgreSQL** (se utiliza PostgreSQL 18 en los comandos de ejemplo), **pgAdmin 4** y un editor como WebStorm o Visual Studio Code.
 
-La base de datos es PostgreSQL y puede administrarse mediante pgAdmin 4.
+Comprobar en PowerShell:
 
-La autenticación utiliza contraseñas protegidas mediante bcrypt y tokens JWT.
+```powershell
+node -v
+npm -v
+git --version
+```
 
-Para las pruebas del backend se utilizan Vitest y Supertest.
+PostgreSQL debe estar instalado y con su servicio encendido. Las rutas `C:\Program Files\PostgreSQL\18\bin\...` deben ajustarse si se ha instalado otra versión o ubicación.
 
-Requisitos para ejecutar el proyecto
+## 3. Descargar el proyecto desde GitHub
 
-Se recomienda instalar Node.js 22.12 o superior, npm, PostgreSQL, pgAdmin 4 y Git.
+Abrir PowerShell en la carpeta donde se desea instalar el repositorio y ejecutar:
 
-También se recomienda utilizar WebStorm o Visual Studio Code como entorno de desarrollo.
-
-PostgreSQL debe estar instalado y su servicio debe encontrarse en ejecución.
-
-1. Clonar el repositorio
-
-Abre una terminal de PowerShell en la carpeta donde deseas guardar el proyecto.
-
-Ejecuta:
-
+```powershell
 git clone https://github.com/2026-II-Senati/Grupo-3-Puro-Relleno-Cupcake.git
-
-Entra a la carpeta descargada:
-
 cd Grupo-3-Puro-Relleno-Cupcake
-
-Para utilizar la versión más reciente integrada por el equipo:
-
 git switch develop
 git pull --ff-only origin develop
+```
 
-La rama "main" contiene las versiones estables y "develop" integra los avances del equipo.
+**`main`** contiene versiones estables. **`develop`** integra el trabajo del equipo. Las tareas se desarrollan en ramas `feature/` y llegan a `develop` mediante Pull Requests.
 
-2. Instalar las dependencias
+## 4. Instalar las dependencias
 
-El proyecto tiene dos aplicaciones independientes: "backend" y "frontend".
+Desde la raíz del repositorio:
 
-Primero instala las dependencias del backend:
-
+```powershell
 cd backend
 npm ci
-
-Regresa a la carpeta principal:
-
-cd ..
-
-Después instala las dependencias del frontend:
-
-cd frontend
+cd ../frontend
 npm ci
-
-Regresa nuevamente a la carpeta principal:
-
 cd ..
+```
 
-"npm ci" instala las versiones registradas en los archivos "package-lock.json".
+`npm ci` instala las versiones registradas en `package-lock.json`. No se debe copiar ni subir `node_modules/`.
 
-No es necesario instalar las dependencias de otro compañero ni copiar su carpeta "node_modules".
+## 5. Crear una base de datos local en pgAdmin 4
 
-3. Configurar PostgreSQL
+Abrir **pgAdmin 4**, conectarse al servidor PostgreSQL, hacer clic derecho en **Databases → Create → Database**, asignar el nombre **`puro_relleno_cupcake`** y seleccionar como propietario el usuario local de PostgreSQL (habitualmente `postgres`). Guardar.
 
-Abre pgAdmin 4.
+Como alternativa, desde Query Tool conectado a la base `postgres`:
 
-Conéctate a tu servidor local de PostgreSQL utilizando la contraseña que configuraste cuando instalaste PostgreSQL.
-
-En el panel izquierdo, abre el servidor y busca "Databases".
-
-Haz clic derecho sobre "Databases", selecciona "Create" y después "Database".
-
-En el campo "Database", escribe exactamente:
-
-puro_relleno_cupcake
-
-En "Owner", selecciona el usuario de PostgreSQL que utilizarás para la conexión, normalmente "postgres" en una instalación local.
-
-Presiona "Save".
-
-También puedes crear la base desde Query Tool, conectado a otra base de datos, mediante:
-
+```sql
 CREATE DATABASE puro_relleno_cupcake;
+```
 
-No es necesario ejecutar ambos procedimientos.
+Utilizar **solo uno de los dos métodos**.
 
-¿Debo crear las tablas manualmente?
+No es necesario crear las tablas a mano. El backend registra los modelos de Sequelize y, al arrancar, ejecuta la sincronización en el entorno de desarrollo. Entre las tablas se encuentran `clients`, `products`, `product_images`, `orders`, `order_details`, `payments`, `roles` y `users`.
 
-No.
+> Este mecanismo es para desarrollo. No sustituye a las migraciones controladas que se requieren en producción.
 
-El backend utiliza modelos Sequelize que se sincronizan con PostgreSQL durante el inicio del servidor.
+## 6. Configurar `backend/.env`
 
-Cuando la conexión y la sincronización funcionen correctamente, se crearán las tablas registradas por el proyecto.
+Desde la carpeta principal:
 
-Las tablas esperadas incluyen:
-
-clients
-products
-orders
-order_details
-payments
-roles
-users
-
-No ejecutes scripts SQL de terceros ni modifiques manualmente las relaciones si las tablas ya fueron creadas correctamente.
-
-La sincronización automática se utiliza para nuestro entorno de desarrollo. Antes de un despliegue real será necesario adoptar migraciones controladas.
-
-4. Configurar las variables de entorno
-
-Por seguridad, el archivo "backend/.env" no se incluye en GitHub.
-
-Cada integrante del equipo debe crear su propio archivo ".env".
-
-Abre una terminal desde la carpeta principal del proyecto y ejecuta:
-
+```powershell
 Copy-Item backend/.env.example backend/.env
+```
 
-Ahora abre el archivo:
+Abrir `backend/.env` en WebStorm y completar los valores:
 
-backend/.env
-
-Completa su contenido utilizando esta estructura:
-
+```dotenv
 NODE_ENV=development
 PORT=3000
 
@@ -144,258 +89,334 @@ DB_HOST=127.0.0.1
 DB_PORT=5432
 DB_NAME=puro_relleno_cupcake
 DB_USER=postgres
-DB_PASSWORD=TU_CONTRASENA_LOCAL
+DB_PASSWORD=REEMPLAZAR_CON_MI_CONTRASENA_LOCAL
 
-JWT_SECRET=TU_CLAVE_SECRETA_GENERADA
+JWT_SECRET=REEMPLAZAR_CON_UNA_CLAVE_ALEATORIA
+```
 
-Reemplaza "TU_CONTRASENA_LOCAL" con la contraseña de tu instalación de PostgreSQL.
+Cada integrante utiliza **su propia contraseña de PostgreSQL**. Si el servidor, usuario o puerto son distintos, ajustar `DB_HOST`, `DB_USER` y `DB_PORT`.
 
-Si utilizas un usuario de PostgreSQL diferente de "postgres", modifica "DB_USER".
+Para generar una clave JWT aleatoria, ejecutar:
 
-Si PostgreSQL utiliza otro puerto, modifica "DB_PORT".
-
-Generar JWT_SECRET
-
-Cada integrante debe generar su propia clave secreta.
-
-Desde una terminal ejecuta:
-
+```powershell
 node -e "console.log(require('node:crypto').randomBytes(48).toString('hex'))"
+```
 
-Copia el resultado y úsalo como valor de "JWT_SECRET".
+Copiar el resultado en `JWT_SECRET`. **No publicar ni subir `backend/.env`, claves JWT ni contraseñas**. El archivo `backend/.env.example` sí debe permanecer en GitHub.
 
-No utilices la contraseña de PostgreSQL como clave JWT.
+## 7. Iniciar el backend y crear las tablas
 
-No compartas el archivo ".env" ni publiques la clave generada.
+En una terminal situada en la carpeta raíz:
 
-5. Iniciar el backend por primera vez
-
-Abre una terminal desde la carpeta principal del proyecto.
-
-Ejecuta:
-
+```powershell
 cd backend
 npm run dev
+```
 
-El backend intentará conectarse a PostgreSQL y sincronizar los modelos de Sequelize.
+Esperar los mensajes de conexión a PostgreSQL y sincronización de modelos. Comprobar la API:
 
-Si todo está configurado correctamente, deberá iniciar el servidor en:
+`http://127.0.0.1:3000/api/health`
 
-http://127.0.0.1:3000
+La respuesta debe contener `"status": "ok"`. Mantener esta terminal encendida mientras se usa la aplicación.
 
-Puedes comprobar su funcionamiento abriendo:
+### Si el equipo va a restaurar el catálogo de demostración
 
-http://127.0.0.1:3000/api/health
+Primero ejecutar el backend una vez para que las tablas estén creadas; luego detenerlo con **Ctrl + C**. **Restaurar el catálogo únicamente sobre una base de desarrollo recién creada con las tablas `products` y `product_images` vacías**, siguiendo la sección 8. Al terminar, volver a iniciar el backend.
 
-La respuesta esperada incluye:
+## 8. Compartir e importar el catálogo con fotografías
 
-{
-"status": "ok"
-}
+### 8.1. Qué contiene el respaldo
 
-Si la conexión falla, revisa que PostgreSQL esté encendido y que "DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD" y "DB_NAME" sean correctos.
+Cuando se publique el archivo **`database/catalogo_demo.dump`**, contendrá exclusivamente los registros de `products` y `product_images`: nombres, descripciones, categorías, precios, disponibilidad e imágenes subidas al administrador. **No incluye** cuentas, hashes de contraseñas, clientes, pedidos ni pagos.
 
-6. Crear el primer usuario administrador
+Las fotografías no se copian por separado: están almacenadas en la columna `image_data` (`BYTEA`) de PostgreSQL. El código las ofrece mediante `/api/v1/products/:id/image`.
 
-El sistema utiliza autenticación mediante correo electrónico y contraseña.
+**Si `database/catalogo_demo.dump` todavía no aparece en GitHub**, es porque aún no se ha generado y publicado el respaldo. El responsable del catálogo debe completar la sección 8.3 antes de que los demás puedan restaurarlo.
 
-Para iniciar sesión por primera vez, es necesario crear un administrador de desarrollo.
+### 8.2. Restaurar el catálogo en la computadora de un compañero
 
-Este procedimiento debe ejecutarse después de haber iniciado correctamente el backend, de manera que las tablas "roles" y "users" ya existan.
+Antes de comenzar, confirmar que la base local **`puro_relleno_cupcake`** ya existe y que el backend creó sus tablas, pero **no hay productos ni imágenes propios** que se necesite conservar. No usar este procedimiento sobre datos importantes.
 
-Abre otra terminal de PowerShell dentro de la carpeta "backend".
+Desde la **raíz del repositorio** ejecutar:
 
-Configura el nombre y correo del usuario de prueba:
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\pg_restore.exe" -h 127.0.0.1 -p 5432 -U postgres -W -d puro_relleno_cupcake --data-only --no-owner --no-privileges --exit-on-error --single-transaction "database\catalogo_demo.dump"
+```
 
+Escribir la contraseña **local** de PostgreSQL cuando se solicite. Si la restauración devuelve algún error, **no continuar como si se hubiera completado**: comprobar el mensaje, verificar que las tablas estén vacías y corregir el problema antes de intentarlo de nuevo.
+
+**Paso adicional imprescindible: actualizar la secuencia de identificadores** para que los siguientes productos se registren con un ID libre. Ejecutar desde PowerShell:
+
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\psql.exe" -h 127.0.0.1 -p 5432 -U postgres -d puro_relleno_cupcake -c "SELECT setval(pg_get_serial_sequence('public.products', 'id'), COALESCE((SELECT MAX(id) FROM public.products), 1), EXISTS (SELECT 1 FROM public.products));"
+```
+
+Comprobar en pgAdmin 4 → **Query Tool**:
+
+```sql
+SELECT COUNT(*) AS total_productos FROM public.products;
+SELECT COUNT(*) AS total_imagenes FROM public.product_images;
+```
+
+Cuando se inicie React y Express, los productos importados deben aparecer en **Catálogo** con sus fotografías. **Importar el catálogo no crea usuarios**: completar la sección 9 para poder iniciar sesión.
+
+### 8.3. Generar o actualizar el catálogo (responsable del proyecto)
+
+**Solo hacerlo desde la base de desarrollo que contiene los productos y fotografías de demostración que queremos compartir**, sin datos de clientes o archivos que no tengamos derecho a distribuir.
+
+En PowerShell, desde la **raíz del repositorio**:
+
+```powershell
+New-Item -ItemType Directory -Force database
+& "C:\Program Files\PostgreSQL\18\bin\pg_dump.exe" -h 127.0.0.1 -p 5432 -U postgres -W -d puro_relleno_cupcake -Fc --data-only -t public.products -t public.product_images -f "database\catalogo_demo.dump"
+```
+
+Comprobar que el archivo se creó y contiene datos de las dos tablas:
+
+```powershell
+& "C:\Program Files\PostgreSQL\18\bin\pg_restore.exe" -l "database\catalogo_demo.dump"
+Get-Item "database\catalogo_demo.dump" | Select-Object Name, Length
+```
+
+El comando de exportación anterior **selecciona solo las dos tablas**, no toda la base. Para evitar conflictos con IDs al importar, los compañeros deben ejecutar la actualización de secuencia indicada en la sección 8.2.
+
+Antes de subirlo, revisar que solo contenga contenido de demostración y comprobar su tamaño. GitHub no admite archivos Git ordinarios de **100 MB o más**; si se acerca a ese límite, no incluir el respaldo directamente en Git y acordar un medio alternativo para compartirlo.
+
+> **Atención:** restaurar un nuevo respaldo sobre una base que ya contiene productos puede provocar identificadores duplicados. Los compañeros que tengan información propia deben conservarla y utilizar una **nueva base de demostración** para probar la nueva versión del catálogo. Actualizar el archivo `.dump` en GitHub **no modifica automáticamente** las bases existentes.
+
+## 9. Crear usuarios de prueba y sus roles
+
+**Cada integrante crea sus propias cuentas en su base local.** Ningún usuario viene dentro de `catalogo_demo.dump`. Antes de ejecutar los scripts, iniciar el backend al menos una vez para crear `roles` y `users`.
+
+Los permisos del backend se distribuyen así:
+
+| Rol | Nombre interno | Funciones principales |
+| --- | --- | --- |
+| Administrador | `admin` | Productos e imágenes, clientes, pedidos, estados y pagos |
+| Atención al cliente | `customer_service` | Clientes, nuevos pedidos, consultas y pagos; no cambia estados de producción |
+| Producción | `production` | Consulta pedidos y actualiza sus estados; no registra pedidos ni pagos |
+
+### 9.1. Crear el administrador
+
+Abrir una **nueva terminal PowerShell** en `backend/`. Se pueden usar los siguientes correos de ejemplo u otros que cada integrante elija:
+
+```powershell
 $env:BOOTSTRAP_ADMIN_NAME = "Administrador de prueba"
 $env:BOOTSTRAP_ADMIN_EMAIL = "admin@ejemplo.test"
-
-Después ingresa una contraseña mediante:
-
-$secure = Read-Host "Contraseña del administrador" -AsSecureString
-
-Utiliza una contraseña de al menos 12 caracteres.
-
-Ejecuta:
-
+$secure = Read-Host "Contraseña del administrador (mínimo 12 caracteres)" -AsSecureString
 $env:BOOTSTRAP_ADMIN_PASSWORD = [System.Net.NetworkCredential]::new("", $secure).Password
-
-Finalmente, ejecuta:
-
 try {
-npx tsx src/scripts/createAdmin.ts
+    npx tsx src/scripts/createAdmin.ts
 }
 finally {
-Remove-Item Env:BOOTSTRAP_ADMIN_PASSWORD -ErrorAction SilentlyContinue
-Remove-Item Env:BOOTSTRAP_ADMIN_EMAIL -ErrorAction SilentlyContinue
-Remove-Item Env:BOOTSTRAP_ADMIN_NAME -ErrorAction SilentlyContinue
-Remove-Variable secure -ErrorAction SilentlyContinue
+    Remove-Item Env:BOOTSTRAP_ADMIN_PASSWORD,Env:BOOTSTRAP_ADMIN_EMAIL,Env:BOOTSTRAP_ADMIN_NAME -ErrorAction SilentlyContinue
+    Remove-Variable secure -ErrorAction SilentlyContinue
 }
+```
 
-El script crea el usuario administrador con una contraseña protegida mediante hash.
+El script utiliza bcrypt para guardar **el hash**, no la contraseña en texto claro. Si indica que ya existe el correo, no lo ejecutes de nuevo con la misma dirección.
 
-No es necesario ingresar contraseñas directamente en pgAdmin.
+### 9.2. Crear la cuenta de Atención al cliente
 
-No compartas las credenciales utilizadas durante esta configuración.
+En la misma terminal, desde `backend/`:
 
-7. Iniciar el frontend
+```powershell
+$env:BOOTSTRAP_USER_NAME = "Atención al cliente"
+$env:BOOTSTRAP_USER_EMAIL = "atencion@ejemplo.test"
+$env:BOOTSTRAP_USER_ROLE = "customer_service"
+$secure = Read-Host "Contraseña de Atención al cliente (mínimo 12 caracteres)" -AsSecureString
+$env:BOOTSTRAP_USER_PASSWORD = [System.Net.NetworkCredential]::new("", $secure).Password
+try {
+    npx tsx src/scripts/createUser.ts
+}
+finally {
+    Remove-Item Env:BOOTSTRAP_USER_PASSWORD,Env:BOOTSTRAP_USER_EMAIL,Env:BOOTSTRAP_USER_NAME,Env:BOOTSTRAP_USER_ROLE -ErrorAction SilentlyContinue
+    Remove-Variable secure -ErrorAction SilentlyContinue
+}
+```
 
-Mantén encendido el backend.
+### 9.3. Crear la cuenta de Producción
 
-Abre otra terminal desde la carpeta principal del repositorio.
+```powershell
+$env:BOOTSTRAP_USER_NAME = "Personal de producción"
+$env:BOOTSTRAP_USER_EMAIL = "produccion@ejemplo.test"
+$env:BOOTSTRAP_USER_ROLE = "production"
+$secure = Read-Host "Contraseña de Producción (mínimo 12 caracteres)" -AsSecureString
+$env:BOOTSTRAP_USER_PASSWORD = [System.Net.NetworkCredential]::new("", $secure).Password
+try {
+    npx tsx src/scripts/createUser.ts
+}
+finally {
+    Remove-Item Env:BOOTSTRAP_USER_PASSWORD,Env:BOOTSTRAP_USER_EMAIL,Env:BOOTSTRAP_USER_NAME,Env:BOOTSTRAP_USER_ROLE -ErrorAction SilentlyContinue
+    Remove-Variable secure -ErrorAction SilentlyContinue
+}
+```
 
-Ejecuta:
+Las cuentas pueden utilizar cualquier contraseña que cumpla los requisitos, pero **se recomienda que cada cuenta tenga una contraseña distinta**. Usar la misma contraseña no cambia su rol; el rol depende de la relación del usuario con la tabla `roles`.
 
+### 9.4. Comprobar usuarios en PostgreSQL
+
+```sql
+SELECT u.id, u.full_name, u.email, r.name AS rol, u.is_active
+FROM public.users AS u
+JOIN public.roles AS r ON r.id = u.role_id
+ORDER BY u.id;
+```
+
+La consulta no muestra contraseñas ni hashes.
+
+## 10. Iniciar el frontend y entrar al sistema
+
+Dejar encendido el backend (`npm run dev` desde `backend/`). En **otra terminal**, desde la raíz:
+
+```powershell
 cd frontend
 npm run dev
+```
 
-Vite iniciará el servidor de desarrollo.
+Abrir `http://127.0.0.1:5173/login` e iniciar sesión con el correo y contraseña de una cuenta creada en la sección 9. Vite envía las solicitudes `/api` al backend local `http://127.0.0.1:3000`.
 
-Abre en tu navegador:
+Rutas principales:
 
-http://127.0.0.1:5173/login
+| Pantalla | URL |
+| --- | --- |
+| Iniciar sesión | `/login` |
+| Dashboard | `/dashboard` |
+| Catálogo | `/catalogo` |
+| Administrar productos e imágenes | `/productos/admin` |
+| Gestión de pedidos | `/pedidos` |
+| Registrar un pedido | `/pedidos/nuevo` |
+| Agenda | `/agenda` |
+| Pagos | `/pagos` |
 
-Inicia sesión con el correo y la contraseña del administrador que creaste anteriormente.
+La autorización real se verifica en **Express**. Ocultar un botón en React no sustituye los controles de permisos del backend.
 
-Durante el desarrollo, Vite redirige las solicitudes "/api" hacia el backend local.
+## 11. Registrar productos personalizados y sus fotografías
 
-Por ello, ambos servidores deben estar funcionando.
+Iniciar sesión como **Administrador** y abrir `http://127.0.0.1:5173/productos/admin`.
 
-8. Módulos disponibles
+El formulario permite escribir el **nombre**, **descripción**, **categoría**, **precio base**, **disponibilidad** y elegir una **fotografía** JPG/PNG/WebP de hasta 3 MB. La fotografía se procesa como WebP y se guarda en `product_images`.
 
-Autenticación: permite iniciar sesión, verificar la sesión y cerrar sesión.
+También existe un recuadro para **pegar una ficha JSON de un producto y rellenar automáticamente el formulario**, por ejemplo:
 
-Catálogo: permite consultar los productos registrados en la base de datos.
+```json
+{
+  "name": "Cupcake de cumpleaños personalizado",
+  "description": "Cupcake personalizado: elegir sabor, relleno, colores y dedicatoria al registrar el pedido.",
+  "category": "Cupcakes personalizados",
+  "basePrice": 12.00,
+  "isAvailable": true
+}
+```
 
-Clientes: administra la información necesaria para registrar pedidos.
+El precio mostrado es **ilustrativo**. Revisar siempre los datos antes de guardar. La ficha JSON rellena los campos, pero **no registra el producto automáticamente**: todavía hay que elegir la fotografía y pulsar **Registrar producto**.
 
-Pedidos: permite crear pedidos personalizados y actualizar sus estados.
+Al cargar la imagen, el backend ofrece la dirección `/api/v1/products/{id}/image`. No copiar estas fotos a `frontend/public/`: se encuentran en PostgreSQL y, si se desean compartir, deben incluirse en `catalogo_demo.dump`.
 
-Agenda: organiza los pedidos según sus fechas de entrega o recogida.
+Las **imágenes decorativas de la interfaz** (logo, favicon y fondos) sí se guardan en `frontend/public/` y se comparten directamente por Git. El logotipo principal se encuentra en `frontend/public/logo-header.png` y el favicon en `frontend/public/favicon.png`.
 
-Pagos: permite registrar adelantos y pagos completos, consultar movimientos y calcular saldos pendientes.
+Los detalles de personalización del pedido (p. ej., sabor, relleno, tamaño, colores, decoración y dedicatoria) se indican al **registrar el pedido**; el formulario actual no define opciones independientes para cada producto. El precio base tampoco se recalcula automáticamente por cada variante.
 
-El módulo de pagos registra operaciones declaradas como recibidas. No procesa transacciones bancarias automáticas.
+## 12. Verificar que la aplicación funcione
 
-9. ¿Por qué mi instalación aparece sin productos ni pedidos?
+Con backend y frontend activos, comprobar que el login sea correcto, que el catálogo muestre imágenes, que el administrador pueda registrar productos, que Atención al cliente pueda crear pedidos y que Producción pueda consultar pedidos y actualizar sus estados.
 
-Porque cada integrante utiliza su propia base de datos local.
+**Pruebas y compilación del backend:**
 
-Clonar el repositorio descarga el código, pero no copia los registros de PostgreSQL del desarrollador original.
-
-Al instalar el proyecto por primera vez, las tablas pueden estar vacías.
-
-Será necesario registrar productos, clientes y pedidos de demostración para probar las funcionalidades.
-
-La creación de un catálogo de datos ficticios reutilizable se realizará mediante un procedimiento de inicialización de datos.
-
-No deben compartirse contraseñas, datos personales de clientes ni respaldos de producción dentro del repositorio.
-
-10. Ejecutar las pruebas
-
-Desde la carpeta "backend", ejecuta:
-
+```powershell
+cd backend
 npm test
-
-Para ejecutar las pruebas automáticamente mientras modificas el código:
-
-npm run test:watch
-
-Para comprobar la compilación de TypeScript:
-
 npm run build
+```
 
-Desde la carpeta "frontend", ejecuta:
+**Comprobación del frontend (en otra terminal o después de volver a la raíz):**
 
+```powershell
+cd frontend
 npm run lint
 npm run build
+```
 
-Las pruebas automatizadas básicas del backend están diseñadas para no modificar la base de datos local.
+El comando `npm test` ejecuta las pruebas de Vitest. `npm run test:watch` permite repetirlas durante el desarrollo. Las pruebas existentes se diseñaron para no modificar los registros del PostgreSQL local; las futuras pruebas de integración con base de datos deben utilizar una **base de pruebas separada**.
 
-Las pruebas de integración que requieran PostgreSQL deberán utilizar un entorno o una base de pruebas independiente.
+## 13. Actualizar el código con GitHub, GitFlow y Jira
 
-11. Documentación de la API REST
+Cada integrante trabaja en una rama propia basada en `develop` y asociada a una tarea de Jira. **Nunca desarrollar cambios directamente en `main`.**
 
-El contrato de la API se encuentra en:
+Para iniciar una tarea nueva sin modificaciones locales pendientes:
 
-backend/docs/api/openapi.yaml
+```powershell
+git switch develop
+git pull --ff-only origin develop
+git switch -c feature/G3PRC-XX
+```
 
-Las rutas del backend utilizan el prefijo:
+Reemplazar `G3PRC-XX` por el identificador real de Jira. Realizar los cambios, ejecutar las pruebas y, antes de guardar:
 
-/api/v1
+```powershell
+git status
+git diff --check
+```
 
-La autenticación se realiza mediante JWT.
+Ejemplo de commit de documentación:
 
-Las rutas protegidas requieren enviar el token en la cabecera HTTP:
+```powershell
+git add README.md backend/README.md
+git diff --cached --name-only
+git diff --cached --check
+git commit -m "docs: actualizar guia de instalacion y uso del equipo"
+git push -u origin HEAD
+```
 
-Authorization: Bearer TOKEN
+Si se cambia el backend, frontend o el catálogo, conviene realizar **commits separados por tipo de cambio**. Revisar qué archivos se van a subir con `git diff --cached --name-only` antes de cada commit. No agregar nunca `.env`, credenciales o bases completas con información privada.
 
-Las operaciones de clientes, pedidos y pagos requieren autenticación.
+Después, en GitHub, crear un **Pull Request** con rama base `develop` y rama de comparación `feature/G3PRC-XX`. Esperar la revisión del equipo y fusionarlo cuando cumpla las pruebas y los criterios de aceptación.
 
-Las operaciones administrativas dependen de los permisos del rol.
+Los demás integrantes reciben el código integrado así:
 
-12. Archivos que no se deben subir a GitHub
+```powershell
+git switch develop
+git pull --ff-only origin develop
+cd backend
+npm ci
+cd ../frontend
+npm ci
+```
 
-Los archivos ".env" contienen contraseñas y configuraciones privadas.
+**`git pull` no importa archivos `.dump` en PostgreSQL.** Si un compañero todavía no tiene catálogo, debe seguir la sección 8.2. Si ya tiene datos propios, no debe restaurar el respaldo encima de ellos.
 
-Las carpetas "node_modules" contienen dependencias que cada integrante puede instalar utilizando npm.
+## 14. Documentación de la API
 
-Las carpetas "dist" contienen archivos generados durante la compilación.
+El contrato de la API REST está en `backend/docs/api/openapi.yaml`. Las rutas principales utilizan el prefijo `/api/v1`; el endpoint de salud es `/api/health`.
 
-Estos elementos deben mantenerse fuera del control de versiones mediante ".gitignore".
+Las rutas protegidas reciben `Authorization: Bearer <TOKEN_JWT>`. Los permisos se comprueban en el backend, conforme al rol y a la operación solicitada. El login utiliza correo y contraseña, y las contraseñas se almacenan como hashes bcrypt.
 
-En cambio, los archivos "package.json", "package-lock.json" y ".env.example" deben mantenerse actualizados en GitHub.
+## 15. Solución de problemas frecuentes
 
-13. Trabajo colaborativo con Git y Jira
+| Problema | Comprobación recomendada |
+| --- | --- |
+| PostgreSQL rechaza la conexión | Verificar servicio, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` y `DB_NAME` en `backend/.env`. |
+| La base de datos no existe | Crear `puro_relleno_cupcake` desde pgAdmin 4. |
+| Faltan tablas | Iniciar `backend` con `npm run dev` y esperar la sincronización de Sequelize. |
+| No existe `JWT_SECRET` | Generarlo como se explica en la sección 6. |
+| No puedo iniciar sesión | Comprobar correo, contraseña y usuario activo; crear cuentas desde los scripts de la sección 9. |
+| Error HTTP 401 | No hay sesión válida o el token no se ha enviado correctamente. |
+| Error HTTP 403 | El usuario inició sesión, pero su rol no autoriza esa operación. |
+| Catálogo vacío | Verificar `products`; importar `catalogo_demo.dump` si la base es nueva. |
+| Fotografías que no aparecen | Verificar `product_images`, `image_url` y la ruta `/api/v1/products/:id/image`. |
+| `pg_restore` indica duplicados | No restaurar sobre una base que ya tenga productos; utilizar una base nueva de demostración. |
+| Error de clave duplicada al registrar un producto restaurado | Ejecutar el ajuste de secuencia de la sección 8.2. |
+| La ruta del ejecutable PostgreSQL no existe | Sustituir `18` por la versión instalada y comprobar la carpeta `bin`. |
+| El puerto está ocupado | Comprobar que no exista otro proceso utilizando `3000` o `5173`. |
+| Un compañero hizo `git pull` pero no ve los productos | Git descarga el respaldo, pero no importa datos automáticamente. Restaurarlo siguiendo la sección 8.2. |
 
-El equipo utiliza una estrategia de trabajo basada en GitFlow.
+## 16. Seguridad y despliegue
 
-La rama "main" contiene las versiones estables.
+Este README describe un **entorno local de desarrollo**. Nunca subir credenciales, archivos `.env`, respaldos reales de clientes, tokens, contraseñas ni información sensible a GitHub. Los archivos `node_modules/` y `dist/` también deben quedar fuera del repositorio; `package.json`, `package-lock.json` y `.env.example` sí deben versionarse.
 
-La rama "develop" concentra los cambios integrados.
+Antes de desplegar el sistema públicamente habrá que definir migraciones de base de datos, gestión segura de sesiones, configuración de infraestructura, copias de seguridad y pruebas adicionales. Las credenciales y los ejemplos de este documento no deben usarse como cuentas de producción.
 
-Cada tarea se desarrolla en una rama independiente cuyo nombre contiene el identificador de Jira.
+---
 
-Ejemplo:
-
-feature/G3PRC-29
-
-Los cambios se incorporan a "develop" mediante Pull Requests.
-
-Antes de fusionar una tarea, deben comprobarse la compilación, las pruebas pertinentes y los criterios de aceptación de Jira.
-
-14. Solución de problemas frecuentes
-
-Error de conexión a PostgreSQL: comprueba que el servicio esté iniciado y que las credenciales de "backend/.env" sean correctas.
-
-La base de datos no existe: créala desde pgAdmin 4 con el nombre "puro_relleno_cupcake".
-
-Falta JWT_SECRET: genera una clave y agrégala al archivo "backend/.env".
-
-El login no funciona: comprueba que existe un usuario administrador y que utilizas sus credenciales, no las de PostgreSQL.
-
-Error 401: la operación requiere una sesión válida.
-
-Error 403: el usuario está autenticado, pero no tiene permiso para esa operación.
-
-Error 404 en una API: comprueba la ruta y que esté registrada en Express.
-
-El frontend no muestra pedidos: comprueba que el backend esté encendido, que PostgreSQL tenga registros y que hayas iniciado sesión.
-
-El catálogo está vacío: comprueba si existen productos registrados en la base de datos local.
-
-El puerto está ocupado: comprueba que no tengas otro servidor utilizando los puertos 3000 o 5173.
-
-15. Consideraciones para el despliegue
-
-La configuración descrita en este documento corresponde al entorno local de desarrollo.
-
-Antes de publicar el sistema deben revisarse la gestión de sesiones, las cookies seguras, los permisos, las migraciones de base de datos, las copias de seguridad y la configuración de producción.
-
-No se deben utilizar contraseñas de desarrollo ni datos ficticios como si fueran información de clientes reales.
-
-Equipo
-
-Grupo 3 – Puro Relleno Cupcake
-
-SENATI – Fullstack Developer Software, 2026-II.
+**Grupo 3 — Puro Relleno Cupcake**  
+**SENATI · Fullstack Developer Software · 2026-II**
