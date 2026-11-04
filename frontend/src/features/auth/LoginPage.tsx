@@ -1,44 +1,86 @@
 import { useState } from 'react';
-import type { FormEvent } from 'react';
+
+import type {
+    FormEvent,
+} from 'react';
+
+import {
+    useNavigate,
+} from 'react-router-dom';
 
 import Button from '../../components/Button/Button.tsx';
 import Input from '../../components/Input/Input.tsx';
 import Card from '../../components/Card/Card.tsx';
 import Alert from '../../components/Alert/Alert.tsx';
 
+import {
+    useAuth,
+} from './AuthProvider';
+
 import './LoginPage.css';
 
 function LoginPage() {
+    const navigate = useNavigate();
+
+    const { signIn } = useAuth();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [showPassword, setShowPassword] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] =
+        useState(false);
 
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
+    const [isLoading, setIsLoading] =
+        useState(false);
 
-    const [message, setMessage] = useState('');
+    const [emailError, setEmailError] =
+        useState('');
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    const [passwordError, setPasswordError] =
+        useState('');
+
+    const [serverError, setServerError] =
+        useState('');
+
+    async function handleSubmit(
+        event: FormEvent<HTMLFormElement>
+    ): Promise<void> {
         event.preventDefault();
+
+        if (isLoading) {
+            return;
+        }
 
         setEmailError('');
         setPasswordError('');
-        setMessage('');
+        setServerError('');
 
         let hasErrors = false;
 
         if (!email.trim()) {
-            setEmailError('El correo electrónico es obligatorio.');
+            setEmailError(
+                'El correo electrónico es obligatorio.'
+            );
+
             hasErrors = true;
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-            setEmailError('Ingresa un correo electrónico válido.');
+
+        } else if (
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                email.trim()
+            )
+        ) {
+            setEmailError(
+                'Ingresa un correo electrónico válido.'
+            );
+
             hasErrors = true;
         }
 
         if (!password) {
-            setPasswordError('La contraseña es obligatoria.');
+            setPasswordError(
+                'La contraseña es obligatoria.'
+            );
+
             hasErrors = true;
         }
 
@@ -46,16 +88,28 @@ function LoginPage() {
             return;
         }
 
-        // Simulación visual: todavía no existe conexión con el backend.
         setIsLoading(true);
 
-        window.setTimeout(() => {
-            setIsLoading(false);
+        try {
+            await signIn(email, password);
 
-            setMessage(
-                'Formulario validado correctamente. La autenticación real se integrará posteriormente.'
-            );
-        }, 800);
+            setPassword('');
+
+            navigate('/dashboard', {
+                replace: true,
+            });
+
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'No se pudo iniciar sesión.';
+
+            setServerError(message);
+
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     return (
@@ -90,7 +144,9 @@ function LoginPage() {
 
                         <form
                             className="prc-login-form"
-                            onSubmit={handleSubmit}
+                            onSubmit={(event) => {
+                                void handleSubmit(event);
+                            }}
                             noValidate
                         >
                             <Input
@@ -104,14 +160,18 @@ function LoginPage() {
                                 onChange={(event) => {
                                     setEmail(event.target.value);
                                     setEmailError('');
-                                    setMessage('');
+                                    setServerError('');
                                 }}
                             />
 
                             <div className="prc-login-password-field">
                                 <Input
                                     label="Contraseña"
-                                    type={showPassword ? 'text' : 'password'}
+                                    type={
+                                        showPassword
+                                            ? 'text'
+                                            : 'password'
+                                    }
                                     placeholder="Ingresa tu contraseña"
                                     autoComplete="current-password"
                                     value={password}
@@ -120,7 +180,7 @@ function LoginPage() {
                                     onChange={(event) => {
                                         setPassword(event.target.value);
                                         setPasswordError('');
-                                        setMessage('');
+                                        setServerError('');
                                     }}
                                 />
 
@@ -129,9 +189,15 @@ function LoginPage() {
                                     variant="secondary"
                                     className="prc-login-toggle"
                                     aria-pressed={showPassword}
-                                    onClick={() => setShowPassword(!showPassword)}
+                                    onClick={() => {
+                                        setShowPassword(
+                                            !showPassword
+                                        );
+                                    }}
                                 >
-                                    {showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                                    {showPassword
+                                        ? 'Ocultar contraseña'
+                                        : 'Mostrar contraseña'}
                                 </Button>
                             </div>
 
@@ -145,13 +211,13 @@ function LoginPage() {
                             </Button>
                         </form>
 
-                        {message && (
+                        {serverError && (
                             <div className="prc-login-message">
                                 <Alert
-                                    variant="info"
-                                    title="Validación completada"
+                                    variant="error"
+                                    title="No se pudo iniciar sesión"
                                 >
-                                    {message}
+                                    {serverError}
                                 </Alert>
                             </div>
                         )}
