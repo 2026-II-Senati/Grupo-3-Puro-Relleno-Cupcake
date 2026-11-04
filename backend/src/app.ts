@@ -19,6 +19,8 @@ import {
 
 import authRouter from "./routes/auth.routes";
 
+import paymentsRouter from "./routes/payments.routes";
+
 const app: Express = express();
 
 app.use(express.json({
@@ -34,6 +36,8 @@ app.use("/api/v1/clients", clientsRouter);
 app.use("/api/v1/products", productsRouter);
 
 app.use("/api/v1/orders", ordersRouter);
+
+app.use("/api/v1/orders", paymentsRouter);
 
 app.use("/api/v1/auth", authRouter);
 
