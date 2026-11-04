@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 
 import Button from '../../components/Button/Button';
@@ -7,7 +7,15 @@ import Select from '../../components/Select/Select';
 import Card from '../../components/Card/Card';
 import Alert from '../../components/Alert/Alert';
 
-import { sampleProducts } from '../catalog/data/products';
+import type { Product } from '../catalog/types/Product';
+
+import {
+    getAvailableProducts,
+} from '../../services/productsApi';
+
+import {
+    submitOrderForm,
+} from '../../services/ordersApi';
 
 import {
     initialOrderFormValues,
@@ -33,14 +41,53 @@ function CreateOrderPage() {
         ...initialOrderFormValues,
     });
 
-    const [errors, setErrors] = useState<OrderFormErrors>({});
+    const [errors, setErrors] =
+        useState<OrderFormErrors>({});
+
     const [formStatus, setFormStatus] = useState<
-        'idle' | 'invalid' | 'preview'
+        'idle' | 'invalid' | 'saving' | 'success' | 'error'
     >('idle');
 
-    const availableProducts = sampleProducts.filter(
-        (product) => product.available
-    );
+    const [availableProducts, setAvailableProducts] =
+        useState<Product[]>([]);
+
+    const [catalogStatus, setCatalogStatus] = useState<
+        'loading' | 'ready' | 'error'
+    >('loading');
+
+    const [serverError, setServerError] = useState('');
+
+    const [createdOrderId, setCreatedOrderId] =
+        useState<number | null>(null);
+
+    useEffect(() => {
+        const controller = new AbortController();
+
+        getAvailableProducts(controller.signal)
+            .then((products) => {
+                if (controller.signal.aborted) {
+                    return;
+                }
+
+                setAvailableProducts(
+                    products.filter((product) => product.available)
+                );
+
+                setCatalogStatus('ready');
+            })
+            .catch((error: unknown) => {
+                if (controller.signal.aborted) {
+                    return;
+                }
+
+                console.error(error);
+                setCatalogStatus('error');
+            });
+
+        return () => {
+            controller.abort();
+        };
+    }, []);
 
     const selectedProduct = availableProducts.find(
         (product) => product.id === values.productId
@@ -73,8 +120,17 @@ function CreateOrderPage() {
         setFormStatus('idle');
     }
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(
+        event: FormEvent<HTMLFormElement>
+    ): Promise<void> {
         event.preventDefault();
+
+        if (
+            formStatus === 'saving' ||
+            formStatus === 'success'
+        ) {
+            return;
+        }
 
         const validationErrors = validateOrderForm(values);
 
@@ -85,12 +141,49 @@ function CreateOrderPage() {
             return;
         }
 
-        setFormStatus('preview');
+        if (catalogStatus !== 'ready') {
+            setServerError(
+                'No se pudo cargar el catálogo de productos.'
+            );
+
+            setFormStatus('error');
+            return;
+        }
+
+        setFormStatus('saving');
+        setServerError('');
+
+        try {
+            const createdOrder = await submitOrderForm(values);
+
+            setCreatedOrderId(createdOrder.id);
+
+            setFormStatus('success');
+
+            setValues({
+                ...initialOrderFormValues,
+            });
+
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Ocurrió un error al registrar el pedido.';
+
+            setServerError(message);
+            setFormStatus('error');
+        }
     }
 
     function handleReset() {
+        if (formStatus === 'saving') {
+            return;
+        }
+
         setValues({ ...initialOrderFormValues });
         setErrors({});
+        setServerError('');
+        setCreatedOrderId(null);
         setFormStatus('idle');
     }
 
@@ -110,10 +203,18 @@ function CreateOrderPage() {
                     </p>
                 </header>
 
-                <Alert variant="info" title="Formulario en desarrollo">
-                    Esta pantalla permite preparar y revisar un pedido.
-                    Los datos todavía no se guardan en el servidor.
-                </Alert>
+                {catalogStatus === 'loading' && (
+                    <Alert variant="info" title="Cargando catálogo">
+                        Estamos consultando los productos disponibles.
+                    </Alert>
+                )}
+
+                {catalogStatus === 'error' && (
+                    <Alert variant="error" title="Error del catálogo">
+                        No se pudieron cargar los productos desde el servidor.
+                        Comprueba que el backend esté funcionando.
+                    </Alert>
+                )}
 
                 <div className="prc-order-layout">
                     <form
@@ -462,13 +563,28 @@ function CreateOrderPage() {
                             </Alert>
                         )}
 
-                        {formStatus === 'preview' && (
+                        {formStatus === 'saving' && (
+                            <Alert variant="info" title="Registrando pedido">
+                                Estamos guardando la información en PostgreSQL.
+                            </Alert>
+                        )}
+
+                        {formStatus === 'success' && (
                             <Alert
-                                variant="info"
-                                title="Formulario validado"
+                                variant="success"
+                                title="¡Pedido registrado correctamente!"
                             >
-                                Los datos son válidos para esta demostración.
-                                El pedido todavía no se ha registrado.
+                                El pedido N.º {createdOrderId} se guardó
+                                correctamente en PostgreSQL.
+                            </Alert>
+                        )}
+
+                        {formStatus === 'error' && (
+                            <Alert
+                                variant="error"
+                                title="No se pudo registrar el pedido"
+                            >
+                                {serverError}
                             </Alert>
                         )}
 
@@ -476,13 +592,21 @@ function CreateOrderPage() {
                             <Button
                                 type="button"
                                 variant="secondary"
+                                disabled={formStatus === 'saving'}
                                 onClick={handleReset}
                             >
                                 Limpiar formulario
                             </Button>
 
-                            <Button type="submit">
-                                Revisar datos del pedido
+                            <Button
+                                type="submit"
+                                isLoading={formStatus === 'saving'}
+                                disabled={
+                                    catalogStatus !== 'ready' ||
+                                    formStatus === 'success'
+                                }
+                            >
+                                Registrar pedido
                             </Button>
                         </div>
                     </form>
@@ -551,8 +675,8 @@ function CreateOrderPage() {
                             </p>
 
                             <p className="prc-order-summary-note">
-                                Ningún dato se guardará hasta implementar
-                                la integración con el backend.
+                                Al registrar el pedido, la información se
+                                guardará en PostgreSQL mediante nuestra API REST.
                             </p>
                         </Card>
                     </aside>
