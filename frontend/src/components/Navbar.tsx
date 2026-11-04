@@ -22,6 +22,13 @@ export const Navbar = () => {
 
     const { session, signOut } = useAuth();
 
+    const role =
+        session?.user.role.trim().toLowerCase() ?? '';
+
+    const canManagePayments =
+        role === 'admin' ||
+        role === 'customer_service';
+
     function handleLogout() {
         signOut();
 
@@ -50,15 +57,16 @@ export const Navbar = () => {
                     margin: '0 auto',
                 }}
             >
-                <h2
+                <img
+                    src="/logo-header.png"
+                    alt="Puro Relleno Cupcake"
                     style={{
-                        margin: 0,
-                        fontSize: '1.2rem',
-                        color: '#db2777',
+                        width: '220px',
+                        height: 'auto',
+                        maxHeight: '65px',
+                        objectFit: 'contain',
                     }}
-                >
-                    🧁 Puro Relleno Cupcake
-                </h2>
+                />
 
                 <div
                     style={{
@@ -83,6 +91,16 @@ export const Navbar = () => {
                         Catálogo
                     </NavLink>
 
+                    {session?.user.role.trim().toLowerCase() ===
+                        'admin' && (
+                            <NavLink
+                                to="/productos/admin"
+                                style={navLinkStyle}
+                            >
+                                Administrar productos
+                            </NavLink>
+                        )}
+
                     <NavLink
                         to="/pedidos"
                         style={navLinkStyle}
@@ -97,12 +115,14 @@ export const Navbar = () => {
                         Agenda
                     </NavLink>
 
-                    <NavLink
-                        to="/pagos"
-                        style={navLinkStyle}
-                    >
-                        Pagos
-                    </NavLink>
+                    {canManagePayments && (
+                        <NavLink
+                            to="/pagos"
+                            style={navLinkStyle}
+                        >
+                            Pagos
+                        </NavLink>
+                    )}
 
                     {session && (
                         <span
