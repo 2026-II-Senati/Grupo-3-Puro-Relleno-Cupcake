@@ -52,6 +52,7 @@ export function Pedidos() {
 
     return (
         <OrderManagementPage
+            key={status}
             initialOrders={orders}
             status={status}
             onStatusChange={updateOrderStatus}
