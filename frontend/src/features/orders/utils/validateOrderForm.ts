@@ -25,7 +25,7 @@ export function validateOrderForm(
     if (!values.phone.trim()) {
         errors.phone = 'Ingresa un número de teléfono.';
     } else if (
-        phoneDigits.length < 7 ||
+        phoneDigits.length < 9 ||
         phoneDigits.length > 15
     ) {
         errors.phone =

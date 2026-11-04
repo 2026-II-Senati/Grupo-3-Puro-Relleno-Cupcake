@@ -15,15 +15,51 @@ import { Agenda } from './pages/Agenda';
 import { Pagos } from './pages/Pagos';
 import { NotFound } from './pages/NotFound';
 
-import ProductCatalogPage from './features/catalog/ProductCatalogPage';
-import { sampleProducts } from './features/catalog/data/products';
+import CatalogConnectedPage from './features/catalog/CatalogConnectedPage';
 
 import CreateOrderPage from './features/orders/CreateOrderPage';
+
+import {
+    AuthProvider,
+    RequireAuth,
+    useAuth,
+} from './features/auth/AuthProvider';
+
+import ProductAdminPage from './pages/ProductAdminPage';
+
+import type { ReactNode } from 'react';
+
+function OnlyRoles({
+                       allowed,
+                       children,
+                   }: {
+    allowed: readonly string[];
+    children: ReactNode;
+}) {
+    const { session } = useAuth();
+
+    if (!session) {
+        return <Navigate to="/login" replace />;
+    }
+
+    const role = session.user.role.trim().toLowerCase();
+
+    if (!allowed.includes(role)) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
+    return <>{children}</>;
+}
 
 function AppLayout() {
     const location = useLocation();
 
-    const hideNavbar = location.pathname === '/login';
+    const { session, checking } = useAuth();
+
+    const hideNavbar =
+        location.pathname === '/login' ||
+        !session ||
+        checking;
 
     return (
         <>
@@ -32,45 +68,80 @@ function AppLayout() {
             <Routes>
                 <Route
                     path="/"
-                    element={<Navigate to="/login" replace />}
-                />
-
-                <Route
-                    path="/login"
-                    element={<Login />}
-                />
-
-                <Route
-                    path="/dashboard"
-                    element={<Dashboard />}
-                />
-
-                <Route
-                    path="/catalogo"
                     element={
-                        <ProductCatalogPage products={sampleProducts} />
+                        <Navigate
+                            to="/dashboard"
+                            replace
+                        />
                     }
                 />
 
                 <Route
-                    path="/pedidos/nuevo"
-                    element={<CreateOrderPage />}
+                    path="/login"
+                    element={
+                        session
+                            ? (
+                                <Navigate
+                                    to="/dashboard"
+                                    replace
+                                />
+                            )
+                            : <Login />
+                    }
                 />
 
-                <Route
-                    path="/pedidos"
-                    element={<Pedidos />}
-                />
+                <Route element={<RequireAuth />}>
+                    <Route
+                        path="/dashboard"
+                        element={<Dashboard />}
+                    />
 
-                <Route
-                    path="/agenda"
-                    element={<Agenda />}
-                />
+                    <Route
+                        path="/catalogo"
+                        element={<CatalogConnectedPage />}
+                    />
 
-                <Route
-                    path="/pagos"
-                    element={<Pagos />}
-                />
+                    <Route
+                        path="/pedidos/nuevo"
+                        element={
+                            <OnlyRoles
+                                allowed={['admin', 'customer_service']}
+                            >
+                                <CreateOrderPage />
+                            </OnlyRoles>
+                        }
+                    />
+
+                    <Route
+                        path="/pedidos"
+                        element={<Pedidos />}
+                    />
+
+                    <Route
+                        path="/agenda"
+                        element={<Agenda />}
+                    />
+
+                    <Route
+                        path="/pagos"
+                        element={
+                            <OnlyRoles
+                                allowed={['admin', 'customer_service']}
+                            >
+                                <Pagos />
+                            </OnlyRoles>
+                        }
+                    />
+
+                    <Route
+                        path="/productos/admin"
+                        element={
+                            <OnlyRoles allowed={['admin']}>
+                                <ProductAdminPage />
+                            </OnlyRoles>
+                        }
+                    />
+                </Route>
 
                 <Route
                     path="*"
@@ -84,7 +155,9 @@ function AppLayout() {
 export default function App() {
     return (
         <BrowserRouter>
-            <AppLayout />
+            <AuthProvider>
+                <AppLayout />
+            </AuthProvider>
         </BrowserRouter>
     );
 }

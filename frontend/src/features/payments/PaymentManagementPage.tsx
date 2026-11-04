@@ -26,9 +26,19 @@ import './PaymentManagementPage.css';
 type PageStatus = 'ready' | 'loading' | 'error';
 
 interface PaymentManagementPageProps {
-    initialOrders: PaymentOrder[];
-    status?: PageStatus;
+    orders: PaymentOrder[];
+    status: PageStatus;
+
+    onRegisterPayment: (
+        orderId: string,
+        payment: PaymentDraft
+    ) => Promise<void>;
 }
+
+type Notice = {
+    variant: 'success' | 'error';
+    message: string;
+};
 
 const badgeVariants: Record<
     PaymentStatus,
@@ -48,36 +58,23 @@ function normalizeText(value: string): string {
 }
 
 function formatDate(value: string): string {
-    return new Date(`${value}T12:00:00`).toLocaleDateString(
-        'es-PE'
-    );
+    return new Date(
+        `${value}T12:00:00`
+    ).toLocaleDateString('es-PE');
 }
 
 export default function PaymentManagementPage({
-                                                  initialOrders,
-                                                  status = 'ready',
+                                                  orders,
+                                                  status,
+                                                  onRegisterPayment,
                                               }: PaymentManagementPageProps) {
-    // Estado local exclusivo de la demostración.
-    // La futura integración deberá obtener y actualizar
-    // esta información mediante la API REST.
-
-    const [orders, setOrders] = useState<PaymentOrder[]>(
-        () =>
-            initialOrders.map((order) => ({
-                ...order,
-                payments: [...order.payments],
-            }))
-    );
-
     const [search, setSearch] = useState('');
 
-    const [selectedOrderId, setSelectedOrderId] = useState<
-        string | null
-    >(initialOrders[0]?.id ?? null);
+    const [selectedOrderId, setSelectedOrderId] =
+        useState<string | null>(null);
 
-    const [demoMessage, setDemoMessage] = useState<
-        string | null
-    >(null);
+    const [notice, setNotice] =
+        useState<Notice | null>(null);
 
     const filteredOrders = orders.filter((order) => {
         const query = normalizeText(search);
@@ -93,86 +90,85 @@ export default function PaymentManagementPage({
             (order) => order.id === selectedOrderId
         ) ?? filteredOrders[0];
 
-    function simulatePayment(
+    async function handlePayment(
         orderId: string,
         payment: PaymentDraft
-    ) {
-        const currentOrder = orders.find(
-            (order) => order.id === orderId
-        );
+    ): Promise<void> {
+        setNotice(null);
 
-        if (!currentOrder) {
-            return;
+        try {
+            await onRegisterPayment(
+                orderId,
+                payment
+            );
+
+            setNotice({
+                variant: 'success',
+                message:
+                    `Se registró un pago de ` +
+                    `${formatSoles(payment.amountCents)} ` +
+                    `para el pedido ${orderId}. ` +
+                    `El movimiento fue guardado en PostgreSQL.`,
+            });
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'No se pudo registrar el pago.';
+
+            setNotice({
+                variant: 'error',
+                message:
+                    `${message} ` +
+                    'Antes de reintentar, comprueba el historial ' +
+                    'para evitar registrar dos veces el mismo pago.',
+            });
+
+            throw error;
         }
-
-        const totals = calculatePaymentTotals(currentOrder);
-
-        if (
-            payment.amountCents <= 0 ||
-            payment.amountCents > totals.balanceCents
-        ) {
-            return;
-        }
-
-        const demoMovement = {
-            ...payment,
-            id: `DEMO-${orderId}-${Date.now()}`,
-        };
-
-        setOrders((previous) =>
-            previous.map((order) =>
-                order.id === orderId
-                    ? {
-                        ...order,
-                        payments: [
-                            ...order.payments,
-                            demoMovement,
-                        ],
-                    }
-                    : order
-            )
-        );
-
-        setDemoMessage(
-            `Se añadió un movimiento de prueba de ${formatSoles(
-                payment.amountCents
-            )} al pedido ${orderId}. No se registró ningún pago real.`
-        );
     }
 
     return (
         <main className="prc-payments-page">
             <div className="prc-payments-container">
+
                 <header className="prc-payments-header">
-          <span className="prc-payments-label">
-            Puro Relleno Cupcake
-          </span>
+                    <span className="prc-payments-label">
+                        Puro Relleno Cupcake
+                    </span>
 
                     <h1>Control de pagos</h1>
 
                     <p>
-                        Consulta importes, adelantos, saldos
-                        pendientes e historial de pagos por pedido.
+                        Consulta importes, adelantos,
+                        saldos pendientes e historial
+                        de pagos por pedido.
                     </p>
                 </header>
 
-                <Alert
-                    variant="info"
-                    title="Módulo de demostración"
-                >
-                    Todos los importes y movimientos mostrados
-                    son ficticios. Esta pantalla no está conectada
-                    a PostgreSQL ni procesa pagos reales.
-                </Alert>
+                {status === 'ready' && (
+                    <Alert
+                        variant="info"
+                        title="Pagos conectados a PostgreSQL"
+                    >
+                        Los pedidos y movimientos mostrados
+                        provienen de nuestra base de datos.
+                        El registro de un pago actualiza
+                        el historial y el saldo pendiente.
+                    </Alert>
+                )}
 
-                {demoMessage && (
+                {notice && (
                     <div className="prc-payments-notice">
                         <Alert
-                            variant="warning"
-                            title="Movimiento simulado"
+                            variant={notice.variant}
+                            title={
+                                notice.variant === 'success'
+                                    ? 'Pago registrado'
+                                    : 'Error al registrar el pago'
+                            }
                         >
-                            {demoMessage} Los cambios desaparecerán
-                            cuando recargues la página.
+                            {notice.message}
                         </Alert>
                     </div>
                 )}
@@ -182,7 +178,8 @@ export default function PaymentManagementPage({
                         className="prc-payments-feedback"
                         role="status"
                     >
-                        Cargando información de pagos...
+                        Cargando pedidos y pagos
+                        desde PostgreSQL...
                     </div>
                 )}
 
@@ -192,8 +189,11 @@ export default function PaymentManagementPage({
                             variant="error"
                             title="Error al cargar los pagos"
                         >
-                            No fue posible obtener la información
-                            de los pedidos.
+                            No fue posible obtener la
+                            información desde el servidor.
+                            Comprueba que el backend esté
+                            funcionando y que tu sesión
+                            siga siendo válida.
                         </Alert>
                     </div>
                 )}
@@ -211,34 +211,44 @@ export default function PaymentManagementPage({
                                 value={search}
                                 onChange={(event) => {
                                     setSearch(event.target.value);
-                                    setDemoMessage(null);
+                                    setNotice(null);
                                 }}
                             />
                         </section>
 
                         {filteredOrders.length === 0 ? (
                             <div className="prc-payments-empty">
-                                <h2>No encontramos pedidos</h2>
+                                <h2>
+                                    {orders.length === 0
+                                        ? 'Todavía no hay pedidos'
+                                        : 'No encontramos pedidos'}
+                                </h2>
 
                                 <p>
-                                    Prueba con otro identificador
-                                    o nombre de cliente.
+                                    {orders.length === 0
+                                        ? 'Registra un pedido para comenzar a gestionar sus pagos.'
+                                        : 'Prueba con otro identificador o nombre de cliente.'}
                                 </p>
                             </div>
                         ) : (
                             <div className="prc-payments-layout">
+
                                 <section
                                     className="prc-payments-list"
                                     aria-label="Pedidos disponibles"
                                 >
                                     <h2>
-                                        Pedidos ({filteredOrders.length})
+                                        Pedidos (
+                                        {filteredOrders.length}
+                                        )
                                     </h2>
 
                                     <div className="prc-payments-order-list">
                                         {filteredOrders.map((order) => {
                                             const totals =
-                                                calculatePaymentTotals(order);
+                                                calculatePaymentTotals(
+                                                    order
+                                                );
 
                                             const isSelected =
                                                 selectedOrder?.id === order.id;
@@ -254,49 +264,55 @@ export default function PaymentManagementPage({
                                                     }
                                                     aria-pressed={isSelected}
                                                     onClick={() => {
-                                                        setSelectedOrderId(order.id);
-                                                        setDemoMessage(null);
+                                                        setSelectedOrderId(
+                                                            order.id
+                                                        );
+                                                        setNotice(null);
                                                     }}
                                                 >
-                          <span className="prc-payment-order-top">
-                            <strong>{order.id}</strong>
+                                                    <span className="prc-payment-order-top">
+                                                        <strong>
+                                                            Pedido {order.id}
+                                                        </strong>
 
-                            <Badge
-                                variant={
-                                    badgeVariants[totals.status]
-                                }
-                            >
-                              {
-                                  paymentStatusLabels[
-                                      totals.status
-                                      ]
-                              }
-                            </Badge>
-                          </span>
+                                                        <Badge
+                                                            variant={
+                                                                badgeVariants[
+                                                                    totals.status
+                                                                    ]
+                                                            }
+                                                        >
+                                                            {
+                                                                paymentStatusLabels[
+                                                                    totals.status
+                                                                    ]
+                                                            }
+                                                        </Badge>
+                                                    </span>
 
                                                     <span className="prc-payment-customer">
-                            {order.customerName}
-                          </span>
+                                                        {order.customerName}
+                                                    </span>
 
                                                     <span className="prc-payment-order-amounts">
-                            <span>
-                              Total:{' '}
-                                <strong>
-                                {formatSoles(
-                                    totals.totalCents
-                                )}
-                              </strong>
-                            </span>
+                                                        <span>
+                                                            Total:{' '}
+                                                            <strong>
+                                                                {formatSoles(
+                                                                    totals.totalCents
+                                                                )}
+                                                            </strong>
+                                                        </span>
 
-                            <span>
-                              Pendiente:{' '}
-                                <strong>
-                                {formatSoles(
-                                    totals.balanceCents
-                                )}
-                              </strong>
-                            </span>
-                          </span>
+                                                        <span>
+                                                            Pendiente:{' '}
+                                                            <strong>
+                                                                {formatSoles(
+                                                                    totals.balanceCents
+                                                                )}
+                                                            </strong>
+                                                        </span>
+                                                    </span>
                                                 </button>
                                             );
                                         })}
@@ -308,25 +324,33 @@ export default function PaymentManagementPage({
                                         className="prc-payments-detail"
                                         aria-label="Detalle económico del pedido"
                                     >
-                                        <PaymentSummary order={selectedOrder} />
+                                        <PaymentSummary
+                                            order={selectedOrder}
+                                        />
 
                                         <Card
                                             heading="Historial de pagos"
-                                            description="Movimientos ficticios del pedido seleccionado."
+                                            description="Movimientos registrados en PostgreSQL."
                                         >
                                             {selectedOrder.payments.length === 0 ? (
                                                 <p className="prc-payment-no-history">
-                                                    Este pedido todavía no tiene
-                                                    movimientos de pago de prueba.
+                                                    Este pedido todavía
+                                                    no tiene pagos registrados.
                                                 </p>
                                             ) : (
                                                 <div className="prc-payment-table-scroll">
                                                     <table className="prc-payment-table">
                                                         <thead>
                                                         <tr>
-                                                            <th scope="col">Fecha</th>
-                                                            <th scope="col">Importe</th>
-                                                            <th scope="col">Medio</th>
+                                                            <th scope="col">
+                                                                Fecha
+                                                            </th>
+                                                            <th scope="col">
+                                                                Importe
+                                                            </th>
+                                                            <th scope="col">
+                                                                Medio
+                                                            </th>
                                                             <th scope="col">
                                                                 Referencia
                                                             </th>
@@ -343,7 +367,9 @@ export default function PaymentManagementPage({
                                                                 )
                                                             )
                                                             .map((payment) => (
-                                                                <tr key={payment.id}>
+                                                                <tr
+                                                                    key={payment.id}
+                                                                >
                                                                     <td>
                                                                         {formatDate(
                                                                             payment.paymentDate
@@ -383,10 +409,10 @@ export default function PaymentManagementPage({
                                                 variant="success"
                                                 title="Pedido completamente pagado"
                                             >
-                                                Según los datos ficticios,
-                                                este pedido no tiene saldo pendiente.
-                                                No se pueden preparar pagos
-                                                adicionales.
+                                                Este pedido no tiene
+                                                saldo pendiente.
+                                                Los movimientos están
+                                                registrados en PostgreSQL.
                                             </Alert>
                                         ) : (
                                             <PaymentForm
@@ -396,8 +422,8 @@ export default function PaymentManagementPage({
                                                         selectedOrder
                                                     ).balanceCents
                                                 }
-                                                onSimulatePayment={(payment) =>
-                                                    simulatePayment(
+                                                onRegisterPayment={(payment) =>
+                                                    handlePayment(
                                                         selectedOrder.id,
                                                         payment
                                                     )
