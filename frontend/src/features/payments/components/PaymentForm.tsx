@@ -19,7 +19,9 @@ import type {
 
 interface PaymentFormProps {
     balanceCents: number;
-    onSimulatePayment: (payment: PaymentDraft) => void;
+    onRegisterPayment: (
+        payment: PaymentDraft
+    ) => Promise<void>;
 }
 
 interface FormValues {
@@ -35,25 +37,30 @@ interface FormErrors {
     paymentDate?: string;
 }
 
-function parseAmountToCents(value: string): number | null {
+function parseAmountToCents(
+    value: string
+): number | null {
     const trimmed = value.trim();
 
     if (!/^\d+(\.\d{1,2})?$/.test(trimmed)) {
         return null;
     }
 
-    const [integerPart, decimalPart = ''] = trimmed.split('.');
+    const [integerPart, decimalPart = ''] =
+        trimmed.split('.');
 
     const cents =
         Number(integerPart) * 100 +
         Number(decimalPart.padEnd(2, '0'));
 
-    return Number.isSafeInteger(cents) ? cents : null;
+    return Number.isSafeInteger(cents)
+        ? cents
+        : null;
 }
 
 export default function PaymentForm({
                                         balanceCents,
-                                        onSimulatePayment,
+                                        onRegisterPayment,
                                     }: PaymentFormProps) {
     const [values, setValues] = useState<FormValues>({
         amount: '',
@@ -63,6 +70,9 @@ export default function PaymentForm({
     });
 
     const [errors, setErrors] = useState<FormErrors>({});
+
+    const [isSubmitting, setIsSubmitting] =
+        useState(false);
 
     const today = getLocalToday();
 
@@ -81,29 +91,45 @@ export default function PaymentForm({
         }));
     }
 
-    function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    async function handleSubmit(
+        event: FormEvent<HTMLFormElement>
+    ): Promise<void> {
         event.preventDefault();
 
+        if (isSubmitting) {
+            return;
+        }
+
         const nextErrors: FormErrors = {};
-        const amountCents = parseAmountToCents(values.amount);
+
+        const amountCents =
+            parseAmountToCents(values.amount);
 
         if (!values.amount.trim()) {
-            nextErrors.amount = 'Ingresa el importe del pago.';
-        } else if (amountCents === null || amountCents <= 0) {
             nextErrors.amount =
-                'Ingresa un importe válido mayor que cero, con máximo dos decimales.';
+                'Ingresa el importe del pago.';
+        } else if (
+            amountCents === null ||
+            amountCents <= 0
+        ) {
+            nextErrors.amount =
+                'Ingresa un importe mayor que cero, con máximo dos decimales.';
         } else if (amountCents > balanceCents) {
             nextErrors.amount =
-                `El importe no puede superar el saldo de ${formatSoles(balanceCents)}.`;
+                `El importe no puede superar ${formatSoles(balanceCents)}.`;
         }
 
         if (!values.method) {
-            nextErrors.method = 'Selecciona un medio de pago.';
+            nextErrors.method =
+                'Selecciona un medio de pago.';
         }
 
         if (!values.paymentDate) {
-            nextErrors.paymentDate = 'Selecciona la fecha del pago.';
-        } else if (values.paymentDate > today) {
+            nextErrors.paymentDate =
+                'Selecciona la fecha del pago.';
+        } else if (
+            values.paymentDate > today
+        ) {
             nextErrors.paymentDate =
                 'La fecha del pago no puede ser futura.';
         }
@@ -120,31 +146,53 @@ export default function PaymentForm({
             return;
         }
 
-        onSimulatePayment({
+        const draft: PaymentDraft = {
             amountCents,
             method: values.method,
             paymentDate: values.paymentDate,
-            reference: values.reference.trim() || undefined,
-        });
+            reference:
+                values.reference.trim() || undefined,
+        };
 
-        setValues({
-            amount: '',
-            method: '',
-            paymentDate: getLocalToday(),
-            reference: '',
-        });
+        setIsSubmitting(true);
 
-        setErrors({});
+        try {
+            await onRegisterPayment(draft);
+
+            /*
+             * Limpiamos el formulario únicamente
+             * cuando el backend confirma el registro.
+             */
+            setValues({
+                amount: '',
+                method: '',
+                paymentDate: getLocalToday(),
+                reference: '',
+            });
+
+            setErrors({});
+        } catch {
+            /*
+             * El componente principal muestra
+             * el mensaje de error del backend.
+             *
+             * Conservamos los campos del formulario.
+             */
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
     return (
         <Card
-            heading="Preparar un nuevo pago"
-            description="Formulario de demostración, sin registro real."
+            heading="Registrar nuevo pago"
+            description="Registra un adelanto o pago recibido del cliente."
         >
             <form
                 className="prc-payment-form"
-                onSubmit={handleSubmit}
+                onSubmit={(event) => {
+                    void handleSubmit(event);
+                }}
                 noValidate
             >
                 <Input
@@ -156,33 +204,43 @@ export default function PaymentForm({
                     placeholder="Ejemplo: 60.00"
                     value={values.amount}
                     error={errors.amount}
+                    disabled={isSubmitting}
                     required
-                    onChange={(event) =>
-                        updateField('amount', event.target.value)
-                    }
+                    onChange={(event) => {
+                        updateField(
+                            'amount',
+                            event.target.value
+                        );
+                    }}
                 />
 
                 <Select
                     label="Medio de pago"
                     value={values.method}
                     error={errors.method}
+                    disabled={isSubmitting}
                     required
-                    onChange={(event) =>
+                    onChange={(event) => {
                         updateField(
                             'method',
-                            event.target.value as PaymentMethod | ''
-                        )
-                    }
+                            event.target.value as
+                                PaymentMethod | ''
+                        );
+                    }}
                 >
-                    <option value="">Selecciona un medio</option>
+                    <option value="">
+                        Selecciona un medio
+                    </option>
 
                     {(
-                        Object.entries(paymentMethodLabels) as [
-                            PaymentMethod,
-                            string,
-                        ][]
+                        Object.entries(
+                            paymentMethodLabels
+                        ) as [PaymentMethod, string][]
                     ).map(([value, label]) => (
-                        <option key={value} value={value}>
+                        <option
+                            key={value}
+                            value={value}
+                        >
                             {label}
                         </option>
                     ))}
@@ -194,9 +252,13 @@ export default function PaymentForm({
                     placeholder="Ejemplo: YP-001234"
                     maxLength={100}
                     value={values.reference}
-                    onChange={(event) =>
-                        updateField('reference', event.target.value)
-                    }
+                    disabled={isSubmitting}
+                    onChange={(event) => {
+                        updateField(
+                            'reference',
+                            event.target.value
+                        );
+                    }}
                 />
 
                 <Input
@@ -205,25 +267,34 @@ export default function PaymentForm({
                     max={today}
                     value={values.paymentDate}
                     error={errors.paymentDate}
+                    disabled={isSubmitting}
                     required
-                    onChange={(event) =>
-                        updateField('paymentDate', event.target.value)
-                    }
+                    onChange={(event) => {
+                        updateField(
+                            'paymentDate',
+                            event.target.value
+                        );
+                    }}
                 />
 
                 <p className="prc-payment-form-note">
-                    Saldo disponible para esta demostración:{' '}
-                    <strong>{formatSoles(balanceCents)}</strong>.
+                    Saldo pendiente:{' '}
+                    <strong>
+                        {formatSoles(balanceCents)}
+                    </strong>
                 </p>
 
                 <p className="prc-payment-form-note">
-                    Al pulsar el botón se agregará un movimiento
-                    ficticio a la pantalla. No se enviará dinero,
-                    no se llamará a una API y no se guardará
-                    ninguna transacción real.
+                    Esta operación registrará en PostgreSQL
+                    un pago declarado como recibido.
+                    No realiza cobros bancarios automáticos.
                 </p>
 
-                <Button type="submit">
+                <Button
+                    type="submit"
+                    isLoading={isSubmitting}
+                    disabled={isSubmitting}
+                >
                     Registrar pago
                 </Button>
             </form>
