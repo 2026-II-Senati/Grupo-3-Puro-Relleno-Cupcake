@@ -17,6 +17,8 @@ import {
     notFoundHandler,
 } from "./middleware/error.middleware";
 
+import authRouter from "./routes/auth.routes";
+
 const app: Express = express();
 
 app.use(express.json({
@@ -33,11 +35,10 @@ app.use("/api/v1/products", productsRouter);
 
 app.use("/api/v1/orders", ordersRouter);
 
-// Manejar rutas inexistentes de la API.
+app.use("/api/v1/auth", authRouter);
+
 app.use("/api", notFoundHandler);
 
-// Manejo centralizado de errores.
-// Debe ser el último middleware.
 app.use(errorHandler);
 
 export default app;
