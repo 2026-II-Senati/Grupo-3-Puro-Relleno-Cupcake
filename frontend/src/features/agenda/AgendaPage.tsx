@@ -193,13 +193,17 @@ function AgendaPage({
                     </Link>
                 </header>
 
-                <Alert
-                    variant="info"
-                    title="Agenda de demostración"
-                >
-                    Los pedidos mostrados son ficticios.
-                    La agenda todavía no está conectada al backend.
-                </Alert>
+                {status === 'ready' && (
+                    <Alert
+                        variant="info"
+                        title="Agenda conectada a PostgreSQL"
+                    >
+                        Los pedidos y sus fechas de entrega se consultan
+                        directamente desde nuestra base de datos.
+                        Puedes utilizar los filtros para organizar
+                        las entregas y recogidas programadas.
+                    </Alert>
+                )}
 
                 {status === 'loading' && (
                     <div

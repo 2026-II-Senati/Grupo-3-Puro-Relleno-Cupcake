@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Link } from 'react-router-dom';
 
@@ -21,7 +21,13 @@ type DateSort = 'newest' | 'oldest';
 
 interface OrderManagementPageProps {
     initialOrders: OrderRecord[];
+
     status?: ManagementStatus;
+
+    onStatusChange: (
+        orderId: string,
+        newStatus: OrderStatus
+    ) => Promise<void>;
 }
 
 const statusLabels: Record<OrderStatus, string> = {
@@ -67,10 +73,15 @@ function formatDate(value: string): string {
 function OrderManagementPage({
                                  initialOrders,
                                  status = 'ready',
+                                 onStatusChange,
                              }: OrderManagementPageProps) {
     const [orders, setOrders] = useState<OrderRecord[]>(
         initialOrders
     );
+
+    useEffect(() => {
+        setOrders(initialOrders);
+    }, [initialOrders]);
 
     const [search, setSearch] = useState('');
     const [statusFilter, setStatusFilter] = useState<
@@ -83,7 +94,14 @@ function OrderManagementPage({
         string | null
     >(null);
 
-    const [hasLocalChanges, setHasLocalChanges] = useState(false);
+    const [hasSavedChanges, setHasSavedChanges] =
+        useState(false);
+
+    const [savingStatus, setSavingStatus] =
+        useState(false);
+
+    const [saveError, setSaveError] =
+        useState('');
 
     const filteredOrders = useMemo(() => {
         const normalizedSearch = normalizeText(search);
@@ -117,19 +135,47 @@ function OrderManagementPage({
         (order) => order.id === selectedOrderId
     );
 
-    function changeOrderStatus(
+    async function changeOrderStatus(
         orderId: string,
         newStatus: OrderStatus
-    ) {
-        setOrders((previous) =>
-            previous.map((order) =>
-                order.id === orderId
-                    ? { ...order, status: newStatus }
-                    : order
-            )
-        );
+    ): Promise<void> {
+        if (savingStatus) {
+            return;
+        }
 
-        setHasLocalChanges(true);
+        setSavingStatus(true);
+        setSaveError('');
+        setHasSavedChanges(false);
+
+        try {
+            // Guardar el cambio en PostgreSQL mediante la API.
+            await onStatusChange(orderId, newStatus);
+
+            // Actualizar la pantalla solamente si se guardó.
+            setOrders((previous) =>
+                previous.map((order) =>
+                    order.id === orderId
+                        ? {
+                            ...order,
+                            status: newStatus,
+                        }
+                        : order
+                )
+            );
+
+            setHasSavedChanges(true);
+
+        } catch (error) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'No se pudo actualizar el pedido.';
+
+            setSaveError(message);
+
+        } finally {
+            setSavingStatus(false);
+        }
     }
 
     function clearFilters() {
@@ -166,22 +212,32 @@ function OrderManagementPage({
 
                 <Alert
                     variant="info"
-                    title="Datos de demostración"
+                    title="Pedidos registrados en PostgreSQL"
                 >
-                    Los pedidos mostrados son ficticios.
-                    Los cambios de estado se realizan únicamente
-                    en esta pantalla y no se guardan en el servidor.
+                    Esta pantalla consulta los pedidos mediante nuestra
+                    API REST. Los cambios de estado se guardan en
+                    la base de datos.
                 </Alert>
 
-                {hasLocalChanges && (
+                {hasSavedChanges && (
                     <div className="prc-orders-message">
                         <Alert
-                            variant="warning"
-                            title="Cambios sin guardar"
+                            variant="success"
+                            title="Estado actualizado correctamente"
                         >
-                            Modificaste el estado de un pedido.
-                            Este cambio es temporal y se perderá
-                            al recargar la página.
+                            El nuevo estado del pedido se guardó
+                            en PostgreSQL.
+                        </Alert>
+                    </div>
+                )}
+
+                {saveError && (
+                    <div className="prc-orders-message">
+                        <Alert
+                            variant="error"
+                            title="Error al actualizar el pedido"
+                        >
+                            {saveError}
                         </Alert>
                     </div>
                 )}
@@ -480,13 +536,18 @@ function OrderManagementPage({
                                                 <Select
                                                     label="Estado del pedido"
                                                     value={selectedOrder.status}
-                                                    onChange={(event) =>
-                                                        changeOrderStatus(
+                                                    disabled={savingStatus}
+                                                    onChange={(event) => {
+                                                        void changeOrderStatus(
                                                             selectedOrder.id,
                                                             event.target.value as OrderStatus
-                                                        )
+                                                        );
+                                                    }}
+                                                    helperText={
+                                                        savingStatus
+                                                            ? 'Guardando cambios...'
+                                                            : 'El cambio se guardará en PostgreSQL.'
                                                     }
-                                                    helperText="Cambio local de demostración. No se guarda en el servidor."
                                                 >
                                                     {availableStatuses.map(
                                                         (orderStatus) => (
